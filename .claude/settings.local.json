@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 build.py)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --disable-gpu --no-first-run --window-size=1100,800 --virtual-time-budget=6000 --screenshot=/tmp/game2.png \"file:///Users/mchevrier/claude_dev/chess/index.html#autotest\")"
+    ]
+  }
+}

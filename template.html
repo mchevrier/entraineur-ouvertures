@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🏆 Mon Entraîneur d'Ouvertures</title>
+<meta name="theme-color" content="#667eea">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ouvertures">
+<style>
+  :root {
+    --light: #f0d9b5;
+    --dark: #b58863;
+    --accent: #4caf50;
+    --bg1: #667eea;
+    --bg2: #764ba2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    min-height: 100vh;
+    color: #2d2d3a;
+  }
+  .screen { display: none; max-width: 1000px; margin: 0 auto; padding: 16px; }
+  .screen.active { display: block; }
+
+  /* ---------- ACCUEIL ---------- */
+  .hero { text-align: center; color: #fff; padding: 18px 0 10px; }
+  .hero h1 { font-size: clamp(1.5rem, 4vw, 2.4rem); text-shadow: 0 2px 8px rgba(0,0,0,.3); }
+  .hero p { opacity: .9; margin-top: 6px; font-size: 1.05rem; }
+  .total-stars {
+    display: inline-block; background: rgba(255,255,255,.2); border-radius: 20px;
+    padding: 6px 18px; margin-top: 10px; font-weight: 700; font-size: 1.1rem; color: #ffe066;
+  }
+  .section-title {
+    color: #fff; font-size: 1.3rem; margin: 22px 6px 10px; font-weight: 800;
+    text-shadow: 0 1px 4px rgba(0,0,0,.3);
+  }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .card {
+    background: #fff; border-radius: 16px; padding: 14px 16px; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,.18); transition: transform .15s, box-shadow .15s;
+    border: 3px solid transparent;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.25); }
+  .card .top { display: flex; align-items: center; gap: 10px; }
+  .card .emoji { font-size: 2rem; }
+  .card h3 { font-size: 1.05rem; }
+  .card p { font-size: .85rem; color: #666; margin-top: 6px; line-height: 1.35; }
+  .card .badges { margin-top: 8px; font-size: .95rem; display: flex; gap: 12px; align-items: center; }
+  .badge-learned { color: var(--accent); font-weight: 700; }
+  .badge-stars { color: #f5a623; letter-spacing: 2px; }
+  .badge-todo { color: #bbb; }
+
+  /* ---------- JEU ---------- */
+  .game-wrap { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+  .board-col { flex: 0 0 auto; }
+  .panel {
+    flex: 1 1 280px; min-width: 270px; max-width: 420px;
+    background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  }
+  .topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #fff; flex-wrap: wrap; }
+  .btn {
+    border: none; border-radius: 12px; padding: 10px 16px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: transform .1s, filter .15s;
+  }
+  .btn:active { transform: scale(.96); }
+  .btn:hover { filter: brightness(1.07); }
+  .btn-back { background: rgba(255,255,255,.25); color: #fff; }
+  .btn-green { background: var(--accent); color: #fff; }
+  .btn-orange { background: #ff9800; color: #fff; }
+  .btn-blue { background: #42a5f5; color: #fff; }
+  .btn-ghost { background: #eee; color: #444; }
+  .game-title { font-weight: 800; font-size: 1.15rem; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.3); flex: 1; }
+
+  .path-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .chip {
+    border: 2px solid #ddd; background: #fafafa; border-radius: 10px; padding: 4px 10px;
+    cursor: pointer; font-family: inherit; font-size: .78rem; font-weight: 700; color: #555;
+    text-align: center; line-height: 1.3;
+  }
+  .chip:hover { border-color: #b39ddb; }
+  .chip.active { border-color: #7e57c2; background: #ede7f6; color: #4527a0; }
+  .chip .mini-stars { display: block; color: #f5a623; letter-spacing: 1px; font-size: .72rem; }
+  .mode-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .mode-btn {
+    flex: 1; padding: 9px; border-radius: 10px; border: 2px solid #ddd; background: #fafafa;
+    font-weight: 700; cursor: pointer; font-family: inherit; font-size: .95rem;
+  }
+  .mode-btn.active-learn { border-color: var(--accent); background: #e8f5e9; color: #2e7d32; }
+  .mode-btn.active-defi { border-color: #ff9800; background: #fff3e0; color: #e65100; }
+
+  .hearts { font-size: 1.4rem; letter-spacing: 3px; min-height: 1.6rem; }
+  .progress-track { background: #eee; border-radius: 10px; height: 14px; overflow: hidden; margin: 10px 0; }
+  .progress-fill {
+    height: 100%; width: 0; border-radius: 10px;
+    background: linear-gradient(90deg, #66bb6a, #43a047); transition: width .3s;
+  }
+  .bubble {
+    background: #f1f6ff; border: 2px solid #c5d8f7; border-radius: 12px; padding: 12px;
+    min-height: 92px; font-size: .98rem; line-height: 1.4; margin-bottom: 12px;
+    white-space: pre-line;
+  }
+  .bubble .who { font-weight: 800; color: #3a6bc4; display: block; margin-bottom: 4px; font-size: .85rem; }
+  .bubble.good { background: #e8f5e9; border-color: #a5d6a7; }
+  .bubble.good .who { color: #2e7d32; }
+  .bubble.bad { background: #ffebee; border-color: #ef9a9a; }
+  .bubble.bad .who { color: #c62828; }
+  .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .moves-box { display: flex; gap: 6px; align-items: stretch; margin-bottom: 12px; }
+  .nav-btn {
+    border: none; border-radius: 10px; background: #e8eaf6; color: #3949ab; font-weight: 800;
+    width: 36px; cursor: pointer; font-size: 1rem; flex: 0 0 auto;
+  }
+  .nav-btn:disabled { opacity: .35; cursor: default; }
+  .nav-btn:not(:disabled):hover { background: #c5cae9; }
+  .moves-list {
+    flex: 1; background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 6px 8px;
+    max-height: 76px; min-height: 40px; overflow-y: auto; font-size: .88rem; line-height: 1.7;
+  }
+  .mv { cursor: pointer; padding: 1px 4px; border-radius: 5px; white-space: nowrap; }
+  .mv:hover { background: #e3f2fd; }
+  .mv.cur { background: #ffe082; font-weight: 700; }
+  .mv-num { color: #999; margin-left: 4px; }
+  .streak { font-weight: 800; color: #ff7043; margin-top: 10px; min-height: 1.3rem; }
+
+  /* ---------- ÉCHIQUIER ---------- */
+  #board {
+    display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
+    width: min(88vw, 520px); aspect-ratio: 1 / 1;
+    border-radius: 10px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    user-select: none; touch-action: manipulation;
+  }
+  #board.shake { animation: shake .4s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); }
+  }
+  .sq { position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .sq.light { background: var(--light); }
+  .sq.dark { background: var(--dark); }
+  .sq.lastmove::after {
+    content: ""; position: absolute; inset: 0; background: rgba(255, 235, 59, .45); pointer-events: none;
+  }
+  .sq.selected::after {
+    content: ""; position: absolute; inset: 0; background: rgba(76, 175, 80, .5); pointer-events: none;
+  }
+  .sq.hint-from::after {
+    content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 4px #42a5f5; border-radius: 4px; pointer-events: none;
+    animation: pulse 1s infinite;
+  }
+  .sq.hint-to::after {
+    content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 4px #ab47bc; border-radius: 4px; pointer-events: none;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .sq .coord { position: absolute; font-size: .55rem; font-weight: 700; opacity: .7; pointer-events: none; }
+  .sq .coord.file { right: 3px; bottom: 2px; }
+  .sq .coord.rank { left: 3px; top: 2px; }
+  .piece { font-size: calc(min(88vw, 520px) / 8 * .92); line-height: 1; pointer-events: none; }
+  .piece.tP { font-size: calc(min(88vw, 520px) / 8 * .78); }
+  .piece.w { color: #fff; text-shadow: 0 0 2px #000, 0 2px 3px rgba(0,0,0,.45); }
+  .piece.b { color: #1c1c1c; text-shadow: 0 1px 2px rgba(255,255,255,.25); }
+
+  /* ---------- FIN DE LIGNE ---------- */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(20, 20, 40, .75); display: none;
+    align-items: center; justify-content: center; z-index: 50;
+  }
+  .overlay.show { display: flex; }
+  .end-box {
+    background: #fff; border-radius: 20px; padding: 30px 34px; text-align: center;
+    max-width: 380px; width: 88%; animation: pop .35s; position: relative; z-index: 60;
+  }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .end-box .big { font-size: 3rem; }
+  .end-close {
+    position: absolute; top: 8px; right: 12px; border: none; background: none;
+    font-size: 1.6rem; color: #bbb; cursor: pointer; line-height: 1; padding: 4px;
+  }
+  .end-close:hover { color: #555; }
+  .end-box h2 { margin: 8px 0; }
+  .end-box .stars-line { font-size: 2.2rem; letter-spacing: 6px; margin: 8px 0; }
+  .end-box p { color: #666; margin-bottom: 16px; }
+  .end-box .action-row { justify-content: center; }
+  .confetti-piece {
+    position: fixed; top: -20px; width: 12px; height: 12px; z-index: 55; pointer-events: none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======== ACCUEIL ======== -->
+<div id="screen-home" class="screen active">
+  <div class="hero">
+    <h1>🏆 Mon Entraîneur d'Ouvertures</h1>
+    <p>Apprends tes ouvertures par cœur avant le tournoi !</p>
+    <div class="total-stars" id="total-stars">⭐ 0 / 30</div>
+  </div>
+  <div class="section-title">♔ Avec les Blancs — prends l'initiative !</div>
+  <div class="cards" id="cards-white"></div>
+  <div class="section-title">♚ Avec les Noirs — contre leurs ouvertures !</div>
+  <div class="cards" id="cards-black"></div>
+  <p style="text-align:center;color:rgba(255,255,255,.7);margin:24px 0 8px;font-size:.85rem">
+    Conseil : apprends chaque ligne ET ses variantes en mode 📖, puis gagne 3 ⭐ sur chacune en mode 🔥 Défi !
+  </p>
+</div>
+
+<!-- ======== JEU ======== -->
+<div id="screen-game" class="screen">
+  <div class="topbar">
+    <button class="btn btn-back" id="btn-home">← Menu</button>
+    <div class="game-title" id="game-title"></div>
+  </div>
+  <div class="game-wrap">
+    <div class="board-col">
+      <div id="board"></div>
+    </div>
+    <div class="panel">
+      <div class="mode-row">
+        <button class="mode-btn" id="mode-learn">📖 Apprendre</button>
+        <button class="mode-btn" id="mode-defi">🔥 Défi</button>
+      </div>
+      <div class="path-row" id="path-row"></div>
+      <div class="hearts" id="hearts"></div>
+      <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+      <div class="moves-box">
+        <button class="nav-btn" id="nav-back" title="Coup précédent">◀</button>
+        <div class="moves-list" id="moves-list"></div>
+        <button class="nav-btn" id="nav-fwd" title="Coup suivant">▶</button>
+      </div>
+      <div class="bubble" id="bubble"><span class="who" id="bubble-who"></span><span id="bubble-text"></span></div>
+      <div class="action-row">
+        <button class="btn btn-blue" id="btn-hint">💡 Indice</button>
+        <button class="btn btn-ghost" id="btn-restart">↺ Recommencer</button>
+      </div>
+      <div class="streak" id="streak"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== FIN ======== -->
+<div class="overlay" id="overlay">
+  <div class="end-box">
+    <button class="end-close" id="end-close" title="Fermer pour voir l'échiquier">✕</button>
+    <div class="big" id="end-emoji">🎉</div>
+    <h2 id="end-title"></h2>
+    <div class="stars-line" id="end-stars"></div>
+    <p id="end-text"></p>
+    <div class="action-row">
+      <button class="btn btn-ghost" id="end-replay">↺ Rejouer</button>
+      <button class="btn btn-blue" id="end-next" style="display:none"></button>
+      <button class="btn btn-orange" id="end-defi" style="display:none">🔥 Mode Défi</button>
+      <button class="btn btn-green" id="end-menu">Menu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LINES = __LINES__;
+
+/* ---------- utilitaires ---------- */
+const GLYPHS = { K:"♚", Q:"♛", R:"♜", B:"♝", N:"♞", P:"♟" };
+const FR = { K:"R", Q:"D", R:"T", B:"F", N:"C" };
+const sanFR = san => san.replace(/[KQRBN]/g, c => FR[c]);
+const $ = id => document.getElementById(id);
+
+function startBoard() {
+  const b = {};
+  const back = ["R","N","B","Q","K","B","N","R"];
+  "abcdefgh".split("").forEach((f, i) => {
+    b[f + "1"] = "w" + back[i];
+    b[f + "2"] = "wP";
+    b[f + "7"] = "bP";
+    b[f + "8"] = "b" + back[i];
+  });
+  return b;
+}
+function applyMove(board, m) {
+  board[m.to] = board[m.from_];
+  delete board[m.from_];
+  if (m.castle) {
+    const rank = m.color === "w" ? "1" : "8";
+    if (m.castle === "K") { board["f" + rank] = board["h" + rank]; delete board["h" + rank]; }
+    else { board["d" + rank] = board["a" + rank]; delete board["a" + rank]; }
+  }
+}
+
+/* ---------- sons (petits bips sympas) ---------- */
+let audioCtx = null;
+function beep(freq, dur = .09, type = "sine", vol = .15, when = 0) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, audioCtx.currentTime + when);
+    g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + when + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(audioCtx.currentTime + when); o.stop(audioCtx.currentTime + when + dur);
+  } catch (e) {}
+}
+const sndMove = () => beep(440, .07, "triangle");
+const sndGood = () => { beep(523, .08); beep(659, .1, "sine", .15, .08); };
+const sndBad  = () => beep(180, .18, "sawtooth", .08);
+const sndWin  = () => { [523, 659, 784, 1047].forEach((f, i) => beep(f, .15, "sine", .15, i * .12)); };
+
+/* ---------- progression (par variante : paths[k] = {learned, stars}) ---------- */
+const STORE_KEY = "openings-trainer-v1";
+function loadProgress() {
+  try {
+    const p = JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    for (const id in p) {
+      const e = p[id];
+      if (e && !e.paths) p[id] = { paths: { 0: { learned: !!e.learned, stars: e.stars || 0 } }, runs: e.runs || 0 };
+    }
+    return p;
+  } catch (e) { return {}; }
+}
+function saveProgress(p) { localStorage.setItem(STORE_KEY, JSON.stringify(p)); }
+let progress = loadProgress();
+const pathProg = (lineId, k) => (((progress[lineId] || {}).paths) || {})[k] || { learned: false, stars: 0 };
+function setPathProg(lineId, k, upd) {
+  const p = progress[lineId] || (progress[lineId] = {});
+  p.paths = p.paths || {};
+  p.paths[k] = { ...pathProg(lineId, k), ...upd };
+  saveProgress(progress);
+}
+
+/* ---------- accueil ---------- */
+function starsStr(n) { return "★".repeat(n) + "☆".repeat(3 - n); }
+function renderHome() {
+  let total = 0, maxTotal = 0;
+  ["w", "b"].forEach(side => {
+    const wrap = $(side === "w" ? "cards-white" : "cards-black");
+    wrap.innerHTML = "";
+    LINES.filter(l => l.side === side).forEach(line => {
+      const n = pathsCount(line);
+      const progs = Array.from({ length: n }, (_, k) => pathProg(line.id, k));
+      const learnedCount = progs.filter(q => q.learned).length;
+      const minStars = Math.min(...progs.map(q => q.stars));
+      total += progs.reduce((s, q) => s + q.stars, 0);
+      maxTotal += 3 * n;
+      const nKid = line.moves.filter(m => m.color === line.side).length;
+      const nVar = n - 1;
+      const card = document.createElement("div");
+      card.className = "card";
+      const learnedLabel = n > 1
+        ? `📖 ${learnedCount}/${n} ${learnedCount === n ? "✓" : "appris"}`
+        : `📖 ${learnedCount ? "Appris ✓" : "À apprendre"}`;
+      card.innerHTML = `
+        <div class="top"><div class="emoji">${line.emoji}</div><h3>${line.title}</h3></div>
+        <p>${line.desc}</p>
+        <div class="badges">
+          <span class="${learnedCount === n ? "badge-learned" : "badge-todo"}">${learnedLabel}</span>
+          <span class="badge-stars" title="3 étoiles quand TOUTES les variantes sont à 3 !">${starsStr(minStars)}</span>
+          <span style="color:#aaa;font-size:.8rem">${nKid} coups${nVar ? ` · ${nVar} variante${nVar > 1 ? "s" : ""}` : ""}</span>
+        </div>`;
+      card.onclick = () => startLine(line, learnedCount === n ? "defi" : "learn");
+      wrap.appendChild(card);
+    });
+  });
+  $("total-stars").textContent = `⭐ ${total} / ${maxTotal}`;
+}
+
+/* ---------- état du jeu ---------- */
+let cur = null;
+
+/* chemins possibles : 0 = ligne principale, k = variation k-1 (l'adversaire dévie en cours de route) */
+const pathsCount = line => 1 + (line.variations || []).length;
+function buildPath(line, k) {
+  if (k === 0) return { moves: line.moves, divergeAt: -1, variantName: null };
+  const v = line.variations[k - 1];
+  return { moves: line.moves.slice(0, v.at).concat(v.moves), divergeAt: v.at, variantName: v.name };
+}
+
+function defaultPath(line, mode) {
+  const n = pathsCount(line);
+  if (mode === "learn") {
+    // d'abord les chemins jamais appris, ensuite rotation
+    for (let k = 0; k < n; k++) if (!pathProg(line.id, k).learned) return k;
+    const p = progress[line.id] || (progress[line.id] = {});
+    const k = (p.runs || 0) % n;
+    p.runs = (p.runs || 0) + 1;
+    saveProgress(progress);
+    return k;
+  }
+  return Math.floor(Math.random() * n); // en Défi, l'adversaire choisit, comme en vrai !
+}
+
+function startLine(line, mode, forcePath) {
+  const k = forcePath != null ? forcePath : defaultPath(line, mode);
+  const path = buildPath(line, k);
+  cur = {
+    line, mode, idx: 0, viewIdx: 0, board: startBoard(), hearts: 3, mistakes: 0,
+    hintStage: 0, selected: null, streak: 0, busy: false, pathK: k,
+    // en Défi sans choix explicite, on n'affiche pas le chemin tiré : surprise !
+    chipSel: forcePath != null ? forcePath : (mode === "defi" ? "rand" : k),
+    path: path.moves, divergeAt: path.divergeAt, variantName: path.variantName,
+  };
+  renderPathChips();
+  $("screen-home").classList.remove("active");
+  $("screen-game").classList.add("active");
+  $("overlay").classList.remove("show");
+  $("game-title").textContent = `${line.emoji} ${line.title}`;
+  $("mode-learn").className = "mode-btn" + (mode === "learn" ? " active-learn" : "");
+  $("mode-defi").className = "mode-btn" + (mode === "defi" ? " active-defi" : "");
+  $("btn-hint").style.display = mode === "learn" ? "" : "none";
+  cur.pendingMsg = mode === "learn"
+    ? `On apprend « ${line.title} ». Joue les coups ${line.side === "w" ? "des Blancs ♔" : "des Noirs ♚"}, je t'explique tout !`
+    : `Mode Défi ! Tu as 3 ❤️. Retrouve tous les coups de mémoire. Bonne chance !`;
+  setBubble("coach", cur.pendingMsg);
+  renderAll();
+  setTimeout(advance, 600);
+}
+
+function renderPathChips() {
+  const row = $("path-row");
+  row.innerHTML = "";
+  const n = pathsCount(cur.line);
+  if (n === 1) { row.style.display = "none"; return; }
+  row.style.display = "flex";
+  for (let k = 0; k < n; k++) {
+    const chip = document.createElement("button");
+    chip.className = "chip" + (cur.chipSel === k ? " active" : "");
+    const q = pathProg(cur.line.id, k);
+    chip.innerHTML = `${k === 0 ? "Principale" : cur.line.variations[k - 1].name}` +
+      `<span class="mini-stars">${q.learned ? starsStr(q.stars) : "à apprendre"}</span>`;
+    chip.onclick = () => startLine(cur.line, cur.mode, k);
+    row.appendChild(chip);
+  }
+  if (cur.mode === "defi") {
+    const rand = document.createElement("button");
+    rand.className = "chip" + (cur.chipSel === "rand" ? " active" : "");
+    rand.innerHTML = `🎲 Surprise<span class="mini-stars">comme en match !</span>`;
+    rand.onclick = () => startLine(cur.line, cur.mode, null);
+    row.appendChild(rand);
+  }
+}
+
+function setBubble(kind, text) {
+  const b = $("bubble");
+  b.className = "bubble" + (kind === "good" ? " good" : kind === "bad" ? " bad" : "");
+  $("bubble-who").textContent = kind === "good" ? "✅ Bravo !" : kind === "bad" ? "❌ Oups !" : "🦉 Coach";
+  $("bubble-text").textContent = text;
+}
+
+function renderAll() { renderBoard(); renderHud(); renderMoves(); }
+
+function renderHud() {
+  const kidMoves = cur.path.filter(m => m.color === cur.line.side).length;
+  const doneKid = cur.path.slice(0, cur.idx).filter(m => m.color === cur.line.side).length;
+  $("progress").style.width = (doneKid / kidMoves * 100) + "%";
+  $("hearts").innerHTML = cur.mode === "defi"
+    ? "❤️".repeat(cur.hearts) + "🖤".repeat(3 - cur.hearts) : "";
+  $("streak").textContent = cur.streak >= 3 ? `🔥 Série de ${cur.streak} bons coups !` : "";
+}
+
+function boardAt(n) {
+  const b = startBoard();
+  for (let i = 0; i < n; i++) applyMove(b, cur.path[i]);
+  return b;
+}
+const isLive = () => cur.viewIdx === cur.idx;
+
+function renderBoard() {
+  const el = $("board");
+  el.innerHTML = "";
+  const board = isLive() ? cur.board : boardAt(cur.viewIdx);
+  const lastMove = cur.viewIdx > 0 ? cur.path[cur.viewIdx - 1] : null;
+  const files = "abcdefgh".split(""), ranks = [8,7,6,5,4,3,2,1];
+  if (cur.line.side === "b") { files.reverse(); ranks.reverse(); }
+  ranks.forEach((r, ri) => files.forEach((f, fi) => {
+    const sqName = f + r;
+    const sq = document.createElement("div");
+    const isLight = ("abcdefgh".indexOf(f) + r) % 2 === 0;
+    sq.className = "sq " + (isLight ? "light" : "dark");
+    if (lastMove && (lastMove.from_ === sqName || lastMove.to === sqName)) sq.classList.add("lastmove");
+    if (isLive()) {
+      if (cur.selected === sqName) sq.classList.add("selected");
+      if (cur.hintStage >= 1 && expected() && expected().from_ === sqName) sq.classList.add("hint-from");
+      if (cur.hintStage >= 2 && expected() && expected().to === sqName) sq.classList.add("hint-to");
+    }
+    if (ri === 7) sq.innerHTML += `<span class="coord file">${f}</span>`;
+    if (fi === 0) sq.innerHTML += `<span class="coord rank">${r}</span>`;
+    const piece = board[sqName];
+    if (piece) sq.innerHTML += `<span class="piece ${piece[0]} t${piece[1]}">${GLYPHS[piece[1]]}</span>`;
+    sq.onclick = () => onSquareClick(sqName);
+    el.appendChild(sq);
+  }));
+}
+
+function renderMoves() {
+  const el = $("moves-list");
+  el.innerHTML = "";
+  cur.path.slice(0, cur.idx).forEach((m, i) => {
+    if (i % 2 === 0) {
+      const num = document.createElement("span");
+      num.className = "mv-num";
+      num.textContent = `${i / 2 + 1}.`;
+      el.appendChild(num);
+    }
+    const sp = document.createElement("span");
+    sp.className = "mv" + (i === cur.viewIdx - 1 ? " cur" : "");
+    sp.textContent = sanFR(m.san);
+    sp.onclick = () => { cur.viewIdx = i + 1; cur.selected = null; renderAll(); };
+    el.appendChild(sp);
+    el.appendChild(document.createTextNode(" "));
+  });
+  if (isLive()) el.scrollTop = el.scrollHeight;
+  $("nav-back").disabled = cur.viewIdx === 0;
+  $("nav-fwd").disabled = isLive();
+}
+
+const expected = () => cur.path[cur.idx] || null;
+const isKidsTurn = () => expected() && expected().color === cur.line.side;
+
+/* fait avancer la ligne : joue les coups de l'adversaire automatiquement */
+function advance() {
+  if (!cur) return;
+  if (!expected()) { finishLine(); return; }
+  if (isKidsTurn()) return; // on attend le clic de l'enfant
+  cur.busy = true;
+  setTimeout(() => {
+    const m = expected();
+    const isDiverge = cur.idx === cur.divergeAt;
+    applyMove(cur.board, m);
+    cur.idx++; cur.viewIdx = cur.idx; cur.busy = false;
+    sndMove();
+    const oppName = cur.line.side === "w" ? "Les Noirs jouent" : "Les Blancs jouent";
+    const prev = cur.pendingMsg ? cur.pendingMsg + "\n" : "";
+    cur.pendingMsg = null;
+    const variant = isDiverge ? `⚡ Surprise, il choisit la variante « ${cur.variantName} » !\n` : "";
+    setBubble("coach", variant + prev + (m.comment ? m.comment + "\n" : "") + `👉 ${oppName} ${sanFR(m.san)}. À toi !`);
+    renderAll();
+    if (!expected()) setTimeout(finishLine, 500);
+  }, 700);
+}
+
+function onSquareClick(sqName) {
+  if (!cur || cur.busy) return;
+  if (!isLive()) {
+    setBubble("coach", "Tu regardes un coup passé 👀. Clique sur ▶ pour revenir à la position actuelle !");
+    return;
+  }
+  if (!isKidsTurn()) return;
+  const piece = cur.board[sqName];
+  const mine = piece && piece[0] === cur.line.side;
+  if (cur.selected === null) {
+    if (mine) { cur.selected = sqName; renderBoard(); }
+    return;
+  }
+  if (sqName === cur.selected) { cur.selected = null; renderBoard(); return; }
+  if (mine) { cur.selected = sqName; renderBoard(); return; }
+  tryMove(cur.selected, sqName);
+}
+
+function tryMove(from, to) {
+  const m = expected();
+  cur.selected = null;
+  if (from === m.from_ && to === m.to) {
+    applyMove(cur.board, m);
+    cur.idx++; cur.viewIdx = cur.idx; cur.hintStage = 0; cur.streak++;
+    sndGood();
+    cur.pendingMsg = "✅ " + (m.comment || `${sanFR(m.san)}, c'est le bon coup !`);
+    setBubble("good", m.comment || `${sanFR(m.san)}, c'est le bon coup !`);
+    renderAll();
+    if (!expected()) setTimeout(finishLine, 600);
+    else advance();
+  } else {
+    cur.streak = 0;
+    sndBad();
+    $("board").classList.remove("shake");
+    void $("board").offsetWidth;
+    $("board").classList.add("shake");
+    if (cur.mode === "defi") {
+      cur.hearts--;
+      if (cur.hearts <= 0) { renderAll(); setTimeout(() => failLine(), 500); return; }
+      setBubble("bad", `Ce n'est pas le coup de ta ligne... Il te reste ${cur.hearts} ❤️. Réfléchis bien !`);
+    } else {
+      cur.mistakes++;
+      if (cur.mistakes >= 2 && cur.hintStage < 1) {
+        cur.hintStage = 1;
+        setBubble("bad", "Pas celui-là ! Regarde, je t'entoure en bleu la pièce qu'il faut bouger. 💡");
+      } else {
+        setBubble("bad", "Essaie encore ! 💪 (clique sur 💡 Indice si tu veux de l'aide)");
+      }
+    }
+    cur.mistakes = cur.mode === "defi" ? cur.mistakes + 1 : cur.mistakes;
+    renderAll();
+  }
+}
+
+function navTo(n) {
+  if (!cur) return;
+  cur.viewIdx = Math.max(0, Math.min(cur.idx, n));
+  cur.selected = null;
+  renderAll();
+}
+$("nav-back").onclick = () => navTo(cur.viewIdx - 1);
+$("nav-fwd").onclick = () => navTo(cur.viewIdx + 1);
+document.addEventListener("keydown", e => {
+  if (!cur || !$("screen-game").classList.contains("active")) return;
+  if (e.key === "ArrowLeft") navTo(cur.viewIdx - 1);
+  if (e.key === "ArrowRight") navTo(cur.viewIdx + 1);
+});
+
+function onHint() {
+  if (!cur || !isKidsTurn() || cur.mode !== "learn" || !isLive()) return;
+  cur.hintStage = Math.min(cur.hintStage + 1, 2);
+  setBubble("coach", cur.hintStage === 1
+    ? "La pièce à jouer est entourée en bleu. À toi de trouver où elle va !"
+    : "Et elle va sur la case violette. Joue le coup pour bien le mémoriser !");
+  renderBoard();
+}
+
+/* ---------- fin de ligne ---------- */
+function confetti() {
+  const colors = ["#ffd54f", "#4fc3f7", "#aed581", "#f06292", "#ba68c8", "#ff8a65"];
+  for (let i = 0; i < 80; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti-piece";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (2 + Math.random() * 2.5) + "s";
+    c.style.animationDelay = Math.random() * .8 + "s";
+    c.style.borderRadius = Math.random() > .5 ? "50%" : "2px";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 6000);
+  }
+}
+
+function pathLabel(line, k) { return k === 0 ? "Ligne principale" : line.variations[k - 1].name; }
+
+function finishLine() {
+  if (!cur) return;
+  const line = cur.line, k = cur.pathK, n = pathsCount(line);
+  $("end-next").style.display = "none";
+  $("end-defi").style.display = "none";
+  if (cur.mode === "learn") {
+    setPathProg(line.id, k, { learned: true });
+    const next = Array.from({ length: n }, (_, i) => i).find(i => !pathProg(line.id, i).learned);
+    $("end-emoji").textContent = "📖";
+    $("end-title").textContent = n > 1 ? `${pathLabel(line, k)} : apprise !` : "Ligne apprise !";
+    $("end-stars").textContent = "";
+    if (next != null) {
+      $("end-text").textContent = `Bravo ! Il reste ${n - Array.from({ length: n }, (_, i) => i).filter(i => pathProg(line.id, i).learned).length} variante(s) à découvrir dans cette ouverture.`;
+      $("end-next").textContent = `▶ ${pathLabel(line, next)}`;
+      $("end-next").style.display = "";
+      $("end-next").onclick = () => startLine(line, "learn", next);
+    } else {
+      $("end-text").textContent = "Tu connais tous les chemins de cette ouverture ! Maintenant, prouve-le en mode Défi pour gagner tes étoiles.";
+      $("end-defi").style.display = "";
+    }
+  } else {
+    const stars = cur.mistakes === 0 ? 3 : cur.mistakes === 1 ? 2 : 1;
+    setPathProg(line.id, k, { stars: Math.max(pathProg(line.id, k).stars, stars) });
+    const next = Array.from({ length: n }, (_, i) => i).find(i => pathProg(line.id, i).stars < 3);
+    $("end-emoji").textContent = stars === 3 ? "🏆" : "🎉";
+    $("end-title").textContent = (n > 1 ? pathLabel(line, k) + " : " : "") + (stars === 3 ? "PARFAIT !" : "terminé !");
+    $("end-stars").textContent = starsStr(stars);
+    if (stars < 3) {
+      $("end-text").textContent = "Bien joué ! Refais-la sans erreur pour décrocher les 3 étoiles.";
+    } else if (next != null) {
+      $("end-text").textContent = "Zéro erreur ! Mais l'ouverture n'est à toi que quand TOUTES ses variantes ont 3 étoiles...";
+      $("end-next").textContent = `🔥 ${pathLabel(line, next)}`;
+      $("end-next").style.display = "";
+      $("end-next").onclick = () => startLine(line, "defi", next);
+    } else {
+      $("end-text").textContent = "Zéro erreur partout, comme un grand maître : cette ouverture est à toi !";
+    }
+  }
+  sndWin();
+  confetti();
+  $("overlay").classList.add("show");
+}
+
+function failLine() {
+  $("end-emoji").textContent = "💪";
+  $("end-title").textContent = "Plus de cœurs !";
+  $("end-stars").textContent = "";
+  $("end-text").textContent = "Pas grave, ça rentre ! Repasse en mode Apprendre pour revoir la ligne, puis retente le Défi.";
+  $("end-defi").style.display = "none";
+  $("overlay").classList.add("show");
+}
+
+/* ---------- navigation ---------- */
+$("btn-home").onclick = () => { cur = null; $("screen-game").classList.remove("active"); $("screen-home").classList.add("active"); renderHome(); };
+$("btn-restart").onclick = () => startLine(cur.line, cur.mode);
+$("btn-hint").onclick = onHint;
+$("mode-learn").onclick = () => startLine(cur.line, "learn");
+$("mode-defi").onclick = () => startLine(cur.line, "defi");
+$("end-replay").onclick = () => startLine(cur.line, cur.mode);
+$("end-defi").onclick = () => startLine(cur.line, "defi");
+$("end-menu").onclick = () => { $("overlay").classList.remove("show"); $("btn-home").onclick(); };
+function closeEndDialog() {
+  $("overlay").classList.remove("show");
+  if (cur) setBubble("coach", "Voilà la position finale ! Revois les coups avec ◀ ▶, ou ↺ Recommencer pour rejouer la ligne.");
+}
+$("end-close").onclick = closeEndDialog;
+$("overlay").onclick = e => { if (e.target === $("overlay")) closeEndDialog(); };
+
+renderHome();
+
+/* hors ligne (PWA) : seulement quand l'appli est servie par un site, pas en double-clic local */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
+/* ---------- auto-test (ouvrir index.html#autotest) ---------- */
+if (location.hash === "#autotest") {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  (async () => {
+    const results = [];
+    for (const line of LINES) {
+      for (let k = 0; k < pathsCount(line); k++) {
+        const label = line.id + (k ? `[var${k}]` : "");
+        try {
+          startLine(line, "learn", k);
+          while (cur && expected()) {
+            let guard = 0;
+            while (!(isKidsTurn() && !cur.busy)) {
+              await sleep(100);
+              if (++guard > 200) throw new Error("timeout attente du trait");
+            }
+            const m = expected();
+            const before = cur.idx;
+            onSquareClick(m.from_);
+            onSquareClick(m.to);
+            if (cur.idx === before) throw new Error("coup refusé: " + m.san);
+          }
+          await sleep(1200);
+          if (!$("overlay").classList.contains("show")) throw new Error("pas d'écran de fin");
+          results.push(label + ": OK");
+        } catch (e) {
+          results.push(label + ": ECHEC - " + e.message);
+        }
+      }
+    }
+    const div = document.createElement("div");
+    div.id = "autotest-result";
+    div.textContent = "AUTOTEST " + (results.every(r => r.endsWith("OK")) ? "PASS" : "FAIL") + " | " + results.join(" | ");
+    document.body.appendChild(div);
+  })();
+}
+</script>
+</body>
+</html>
