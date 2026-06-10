@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>🏆 Mon Entraîneur d'Ouvertures</title>
 <meta name="theme-color" content="#667eea">
+<meta name="color-scheme" content="only light">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,6 +19,7 @@
     --bg1: #667eea;
     --bg2: #764ba2;
   }
+  html { color-scheme: only light; }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
     font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
@@ -141,8 +143,10 @@
     40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); }
   }
   .sq { position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .sq.light { background: var(--light); }
-  .sq.dark { background: var(--dark); }
+  /* dégradés plutôt que background-color : les "modes sombres forcés" (Samsung, Chrome
+     Android) inversent les couleurs unies mais ne touchent pas aux images de fond */
+  .sq.light { background-color: var(--light); background-image: linear-gradient(var(--light), var(--light)); }
+  .sq.dark { background-color: var(--dark); background-image: linear-gradient(var(--dark), var(--dark)); }
   .sq.lastmove::after {
     content: ""; position: absolute; inset: 0; background: rgba(255, 235, 59, .45); pointer-events: none;
   }
@@ -161,10 +165,10 @@
   .sq .coord { position: absolute; font-size: .55rem; font-weight: 700; opacity: .7; pointer-events: none; }
   .sq .coord.file { right: 3px; bottom: 2px; }
   .sq .coord.rank { left: 3px; top: 2px; }
-  .piece { font-size: calc(min(88vw, 520px) / 8 * .92); line-height: 1; pointer-events: none; }
-  .piece.tP { font-size: calc(min(88vw, 520px) / 8 * .78); }
-  .piece.w { color: #fff; text-shadow: 0 0 2px #000, 0 2px 3px rgba(0,0,0,.45); }
-  .piece.b { color: #1c1c1c; text-shadow: 0 1px 2px rgba(255,255,255,.25); }
+  .piece {
+    width: 88%; height: 88%; pointer-events: none; user-select: none; -webkit-user-select: none;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,.25));
+  }
 
   /* ---------- FIN DE LIGNE ---------- */
   .overlay {
@@ -205,9 +209,9 @@
     <p>Apprends tes ouvertures par cœur avant le tournoi !</p>
     <div class="total-stars" id="total-stars">⭐ 0 / 30</div>
   </div>
-  <div class="section-title">♔ Avec les Blancs — prends l'initiative !</div>
+  <div class="section-title">♔&#xFE0E; Avec les Blancs — prends l'initiative !</div>
   <div class="cards" id="cards-white"></div>
-  <div class="section-title">♚ Avec les Noirs — contre leurs ouvertures !</div>
+  <div class="section-title">♚&#xFE0E; Avec les Noirs — contre leurs ouvertures !</div>
   <div class="cards" id="cards-black"></div>
   <p style="text-align:center;color:rgba(255,255,255,.7);margin:24px 0 8px;font-size:.85rem">
     Conseil : apprends chaque ligne ET ses variantes en mode 📖, puis gagne 3 ⭐ sur chacune en mode 🔥 Défi !
@@ -268,7 +272,7 @@
 const LINES = __LINES__;
 
 /* ---------- utilitaires ---------- */
-const GLYPHS = { K:"♚", Q:"♛", R:"♜", B:"♝", N:"♞", P:"♟" };
+const PIECES = __PIECES__; // pièces SVG (jeu cburnett) en data-URI : rendu identique partout
 const FR = { K:"R", Q:"D", R:"T", B:"F", N:"C" };
 const sanFR = san => san.replace(/[KQRBN]/g, c => FR[c]);
 const $ = id => document.getElementById(id);
@@ -491,7 +495,7 @@ function renderBoard() {
     if (ri === 7) sq.innerHTML += `<span class="coord file">${f}</span>`;
     if (fi === 0) sq.innerHTML += `<span class="coord rank">${r}</span>`;
     const piece = board[sqName];
-    if (piece) sq.innerHTML += `<span class="piece ${piece[0]} t${piece[1]}">${GLYPHS[piece[1]]}</span>`;
+    if (piece) sq.innerHTML += `<img class="piece" draggable="false" alt="" src="${PIECES[piece]}">`;
     sq.onclick = () => onSquareClick(sqName);
     el.appendChild(sq);
   }));
