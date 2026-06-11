@@ -271,6 +271,13 @@
   .end-box .stars-line { font-size: 2.2rem; letter-spacing: 6px; margin: 8px 0; }
   .end-box p { color: #666; margin-bottom: 16px; }
   .end-box .action-row { justify-content: center; }
+  #update-banner {
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    background: #2d2d3a; color: #fff; border-radius: 14px; padding: 10px 14px;
+    display: none; align-items: center; gap: 12px; z-index: 100;
+    box-shadow: 0 6px 20px rgba(0,0,0,.4); font-size: .95rem; max-width: 92vw;
+  }
+  #update-banner.show { display: flex; }
   .confetti-piece {
     position: fixed; top: -20px; width: 12px; height: 12px; z-index: 55; pointer-events: none;
     animation: fall linear forwards;
@@ -290,6 +297,7 @@
     <div class="hero-bar">
       <div class="total-stars" id="total-stars">⭐ 0</div>
       <button class="btn-user" id="btn-user">👤</button>
+      <button class="btn-user" id="btn-fullscreen" style="display:none">⛶ Plein écran</button>
     </div>
   </div>
   <details class="notice">
@@ -367,6 +375,11 @@
       <button class="btn btn-green" id="btn-new-user">C'est parti !</button>
     </div>
   </div>
+</div>
+
+<div id="update-banner">
+  <span>✨ Une nouvelle version est disponible !</span>
+  <button class="btn btn-green" id="btn-update">Mettre à jour</button>
 </div>
 
 <div class="overlay" id="overlay">
@@ -973,8 +986,41 @@ if (db.current && db.users[db.current]) {
 
 /* hors ligne (PWA) : seulement quand l'appli est servie par un site, pas en double-clic local */
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  navigator.serviceWorker.register("sw.js").catch(() => {});
+  navigator.serviceWorker.register("sw.js").then(reg => {
+    // détection de mise à jour : on prévient et on propose de recharger
+    const hadController = !!navigator.serviceWorker.controller;
+    reg.addEventListener("updatefound", () => {
+      const nw = reg.installing;
+      if (!nw) return;
+      nw.addEventListener("statechange", () => {
+        if (nw.state === "activated" && hadController) $("update-banner").classList.add("show");
+      });
+    });
+    // re-vérifie quand on revient sur l'appli (utile en mode installé)
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) reg.update().catch(() => {});
+    });
+  }).catch(() => {});
 }
+$("btn-update").onclick = () => location.reload();
+
+/* plein écran : masqué si non supporté (Safari iPhone) ou si déjà en mode app installée */
+(function () {
+  const el = document.documentElement;
+  const supported = el.requestFullscreen || el.webkitRequestFullscreen;
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (!supported || standalone) return;
+  const btn = $("btn-fullscreen");
+  btn.style.display = "";
+  const isFs = () => document.fullscreenElement || document.webkitFullscreenElement;
+  btn.onclick = () => {
+    if (isFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+  };
+  const refresh = () => { btn.textContent = isFs() ? "⛶ Quitter" : "⛶ Plein écran"; };
+  document.addEventListener("fullscreenchange", refresh);
+  document.addEventListener("webkitfullscreenchange", refresh);
+})();
 
 /* ---------- auto-test (ouvrir index.html#autotest) ---------- */
 if (location.hash === "#autotest") {
