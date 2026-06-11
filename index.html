@@ -222,18 +222,25 @@
     .bubble { order: -2; min-height: 0; margin-bottom: 8px; }
     .action-row { order: -1; margin-bottom: 12px; }
   }
-  /* téléphone en paysage : grand échiquier à gauche (calé sur la hauteur),
-     bulle + boutons bien disposés à droite */
+  /* téléphone en paysage : échiquier maximal à gauche (toute la hauteur),
+     Menu + titre + boutons dans la colonne de droite */
   @media (orientation: landscape) and (max-height: 520px) {
-    .screen { padding: 8px 12px; }
-    .topbar { margin-bottom: 6px; }
-    .btn-back { padding: 6px 12px; }
+    .screen { padding: 8px 12px; position: relative; }
     .game-wrap { flex-wrap: nowrap; gap: 14px; justify-content: flex-start; }
-    #board { width: min(calc(100vh - 70px), 520px); }
-    #board { width: min(calc(100dvh - 70px), 520px); }
+    #board { width: min(calc(100vh - 16px), 520px); }
+    #board { width: min(calc(100dvh - 16px), 520px); }
+    /* le bandeau Menu + titre vient coiffer la colonne de droite */
+    .topbar {
+      position: absolute; top: 8px; right: 12px; margin: 0; flex-wrap: nowrap; gap: 8px;
+      left: calc(min(100vh - 16px, 520px) + 26px);
+      left: calc(min(100dvh - 16px, 520px) + 26px);
+    }
+    .btn-back { padding: 6px 12px; flex: 0 0 auto; }
+    .game-title { font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .panel {
       display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; max-width: none;
-      max-height: calc(100vh - 70px); max-height: calc(100dvh - 70px);
+      margin-top: 44px;
+      max-height: calc(100vh - 60px); max-height: calc(100dvh - 60px);
       overflow-y: auto; padding: 12px;
     }
     .panel > * { flex-shrink: 0; }
