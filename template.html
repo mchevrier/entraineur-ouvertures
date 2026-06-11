@@ -88,17 +88,30 @@
   .card {
     background: #fff; border-radius: 16px; padding: 14px 16px; cursor: pointer;
     box-shadow: 0 4px 14px rgba(0,0,0,.18); transition: transform .15s, box-shadow .15s;
-    border: 3px solid transparent;
+    border: 3px solid transparent; position: relative;
   }
   .card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.25); }
+  .card.done {
+    border-color: #f5a623;
+    background: linear-gradient(135deg, #fffdf4, #fff5da);
+    box-shadow: 0 4px 18px rgba(245, 166, 35, .4);
+  }
+  .card .done-badge {
+    position: absolute; top: -14px; right: -10px; font-size: 2rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.3));
+  }
   .card .top { display: flex; align-items: center; gap: 10px; }
   .card .emoji { font-size: 2rem; }
   .card h3 { font-size: 1.05rem; }
   .card p { font-size: .85rem; color: #666; margin-top: 6px; line-height: 1.35; }
-  .card .badges { margin-top: 8px; font-size: .95rem; display: flex; gap: 12px; align-items: center; }
+  .card .badges { margin-top: 8px; font-size: .95rem; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
   .badge-learned { color: var(--accent); font-weight: 700; }
   .badge-stars { color: #f5a623; letter-spacing: 2px; }
   .badge-todo { color: #bbb; }
+  .badge-level { font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .lvl-debutant { background: #e3f6e8; color: #1d8a45; }
+  .lvl-inter { background: #fff3d6; color: #b07b00; }
+  .lvl-avance { background: #fde3e3; color: #c0392b; }
 
   /* ---------- JEU ---------- */
   .game-wrap { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
@@ -562,6 +575,7 @@ function setPathProg(lineId, k, upd) {
 }
 
 /* ---------- accueil ---------- */
+const LEVEL_INFO = { debutant: ["🟢", "Débutant"], inter: ["🟡", "Intermédiaire"], avance: ["🔴", "Avancé"] };
 function starsStr(n) { return "★".repeat(n) + "☆".repeat(3 - n); }
 function renderHome() {
   let total = 0, maxTotal = 0;
@@ -578,14 +592,18 @@ function renderHome() {
       const nKid = line.moves.filter(m => m.color === line.side).length;
       const nVar = n - 1;
       const card = document.createElement("div");
-      card.className = "card";
+      const done = learnedCount === n && minStars === 3;
+      card.className = "card" + (done ? " done" : "");
       const learnedLabel = n > 1
         ? `📖 ${learnedCount}/${n} ${learnedCount === n ? "✓" : "appris"}`
         : `📖 ${learnedCount ? "Appris ✓" : "À apprendre"}`;
+      const lvl = LEVEL_INFO[line.level] || LEVEL_INFO.debutant;
       card.innerHTML = `
+        ${done ? '<div class="done-badge" title="Ouverture maîtrisée !">🏆</div>' : ""}
         <div class="top"><div class="emoji">${line.emoji}</div><h3>${line.title}</h3></div>
         <p>${line.desc}</p>
         <div class="badges">
+          <span class="badge-level lvl-${line.level}">${lvl[0]} ${lvl[1]}</span>
           <span class="${learnedCount === n ? "badge-learned" : "badge-todo"}">${learnedLabel}</span>
           <span class="badge-stars" title="3 étoiles quand TOUTES les variantes sont à 3 !">${starsStr(minStars)}</span>
           <span style="color:#aaa;font-size:.8rem">${nKid} coups${nVar ? ` · ${nVar} variante${nVar > 1 ? "s" : ""}` : ""}</span>

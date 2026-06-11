@@ -755,9 +755,41 @@ def process_moves(board, moves, ctx):
     return out
 
 
+# Ordre d'affichage (du plus classique au plus original, par couleur) et niveau de chaque module
+ORDER_LEVELS = {
+    # ------- Blancs -------
+    "italienne-blancs":     "debutant",
+    "anti-scandinave":      "debutant",
+    "anti-francaise":       "debutant",
+    "anti-caro":            "inter",
+    "anti-sicilienne":      "inter",
+    "anti-pirc":            "inter",
+    "piege-legal":          "debutant",
+    "fried-liver":          "avance",
+    "morra":                "avance",
+    # ------- Noirs -------
+    "anti-berger":          "debutant",
+    "italienne-noirs":      "debutant",
+    "espagnole-noirs":      "inter",
+    "ecossaise-noirs":      "inter",
+    "gambit-dame-noirs":    "inter",
+    "anti-londres":         "inter",
+    "vienne-noirs":         "inter",
+    "gambit-roi-noirs":     "inter",
+    "anti-danois":          "inter",
+    "anti-danois-accepte":  "avance",
+    "anglaise-noirs":       "avance",
+    "anti-catalane":        "avance",
+}
+
+
 def main():
+    ids = [l["id"] for l in LINES]
+    assert sorted(ids) == sorted(ORDER_LEVELS), \
+        f"ORDER_LEVELS désynchronisé : {set(ids) ^ set(ORDER_LEVELS)}"
+    rank = list(ORDER_LEVELS)
     out = []
-    for line in LINES:
+    for line in sorted(LINES, key=lambda l: rank.index(l["id"])):
         board = chess.Board()
         moves_out = process_moves(board, line["moves"], line["id"])
         # le dernier coup doit être joué par l'enfant (= la couleur de la ligne)
@@ -776,7 +808,7 @@ def main():
             assert vmoves[-1]["color"] == line["side"], f"[{line['id']}/{var['name']}] dernier coup pas au trait de l'enfant"
             vars_out.append(dict(at=at, name=var["name"], moves=vmoves))
         out.append(dict(
-            id=line["id"], side=line["side"], emoji=line["emoji"],
+            id=line["id"], side=line["side"], emoji=line["emoji"], level=ORDER_LEVELS[line["id"]],
             title=line["title"], desc=line["desc"], moves=moves_out, variations=vars_out,
         ))
         print(f"OK  {line['id']:24s} {len(moves_out):2d} demi-coups, {len(vars_out)} variante(s)")
