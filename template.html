@@ -173,6 +173,7 @@
 
   /* ---------- ÉCHIQUIER ---------- */
   #board {
+    position: relative;
     display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
     width: min(88vw, 520px); aspect-ratio: 1 / 1;
     border-radius: 10px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,.35);
@@ -209,6 +210,16 @@
   .piece {
     width: 88%; height: 88%; pointer-events: none; user-select: none; -webkit-user-select: none;
     filter: drop-shadow(0 2px 2px rgba(0,0,0,.25));
+  }
+  .arrow-svg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 5; transition: opacity .35s;
+  }
+  /* sur téléphone : la bulle du coach et les boutons remontent juste sous l'échiquier */
+  @media (max-width: 860px) {
+    .panel { display: flex; flex-direction: column; max-width: min(88vw, 520px); }
+    .bubble { order: -2; min-height: 0; margin-bottom: 8px; }
+    .action-row { order: -1; margin-bottom: 12px; }
   }
 
   /* ---------- FIN DE LIGNE ---------- */
@@ -679,6 +690,43 @@ function renderMoves() {
   $("nav-fwd").disabled = isLive();
 }
 
+/* flèche fugace sur l'échiquier : vert = bon coup, rouge = erreur, bleu = coup adverse */
+let arrowEl = null, arrowTimer = null;
+function showArrow(from, to, color, ms = 2000) {
+  if (arrowEl) { arrowEl.remove(); arrowEl = null; }
+  if (arrowTimer) clearTimeout(arrowTimer);
+  const toXY = sq => {
+    const f = sq.charCodeAt(0) - 97, r = +sq[1];
+    return cur.line.side === "b" ? [7 - f + .5, r - 1 + .5] : [f + .5, 8 - r + .5];
+  };
+  const [x1, y1] = toXY(from), [x2, y2] = toXY(to);
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+  const ux = dx / len, uy = dy / len, px = -uy, py = ux;
+  const tipX = x2 - ux * .12, tipY = y2 - uy * .12;          // pointe
+  const baseX = tipX - ux * .38, baseY = tipY - uy * .38;     // base du triangle
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 8 8");
+  svg.classList.add("arrow-svg");
+  const line = document.createElementNS(ns, "line");
+  line.setAttribute("x1", x1 + ux * .2); line.setAttribute("y1", y1 + uy * .2);
+  line.setAttribute("x2", baseX); line.setAttribute("y2", baseY);
+  line.setAttribute("stroke", color); line.setAttribute("stroke-width", ".22");
+  line.setAttribute("stroke-linecap", "round"); line.setAttribute("opacity", ".85");
+  const head = document.createElementNS(ns, "polygon");
+  head.setAttribute("points",
+    `${tipX},${tipY} ${baseX + px * .22},${baseY + py * .22} ${baseX - px * .22},${baseY - py * .22}`);
+  head.setAttribute("fill", color); head.setAttribute("opacity", ".85");
+  svg.appendChild(line); svg.appendChild(head);
+  $("board").appendChild(svg);
+  arrowEl = svg;
+  arrowTimer = setTimeout(() => {
+    svg.style.opacity = "0";
+    setTimeout(() => svg.remove(), 400);
+    if (arrowEl === svg) arrowEl = null;
+  }, ms);
+}
+
 const expected = () => cur.path[cur.idx] || null;
 const isKidsTurn = () => expected() && expected().color === cur.line.side;
 
@@ -700,8 +748,9 @@ function advance() {
     const variant = isDiverge ? `⚡ Surprise, il choisit la variante « ${cur.variantName} » !\n` : "";
     setBubble("coach", variant + prev + (m.comment ? m.comment + "\n" : "") + `👉 ${oppName} ${sanFR(m.san)}. À toi !`);
     renderAll();
+    showArrow(m.from_, m.to, "#2b7de9");
     if (!expected()) setTimeout(finishLine, 500);
-  }, 700);
+  }, 1100);
 }
 
 function onSquareClick(sqName) {
@@ -732,6 +781,7 @@ function tryMove(from, to) {
     cur.pendingMsg = "✅ " + (m.comment || `${sanFR(m.san)}, c'est le bon coup !`);
     setBubble("good", m.comment || `${sanFR(m.san)}, c'est le bon coup !`);
     renderAll();
+    showArrow(m.from_, m.to, "#2e9d3a");
     if (!expected()) setTimeout(finishLine, 600);
     else advance();
   } else {
@@ -742,7 +792,12 @@ function tryMove(from, to) {
     $("board").classList.add("shake");
     if (cur.mode === "defi") {
       cur.hearts--;
-      if (cur.hearts <= 0) { renderAll(); setTimeout(() => failLine(), 500); return; }
+      if (cur.hearts <= 0) {
+        renderAll();
+        showArrow(from, to, "#e53935");
+        setTimeout(() => failLine(), 500);
+        return;
+      }
       setBubble("bad", `Ce n'est pas le coup de ta ligne... Il te reste ${cur.hearts} ❤️. Réfléchis bien !`);
     } else {
       cur.mistakes++;
@@ -755,6 +810,7 @@ function tryMove(from, to) {
     }
     cur.mistakes = cur.mode === "defi" ? cur.mistakes + 1 : cur.mistakes;
     renderAll();
+    showArrow(from, to, "#e53935");
   }
 }
 
