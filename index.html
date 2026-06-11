@@ -69,10 +69,11 @@
   .profile-row .pavatar { font-size: 1.5rem; }
   .profile-row .pname { font-weight: 800; flex: 1; color: #2d2d3a; }
   .profile-row .pstars { color: #f5a623; font-weight: 700; font-size: .9rem; }
-  .profile-row .pdel {
+  .profile-row .pdel, .profile-row .preset {
     border: none; background: none; color: #ccc; cursor: pointer; font-size: 1rem; padding: 2px 6px;
   }
   .profile-row .pdel:hover { color: #e53935; }
+  .profile-row .preset:hover { color: #ff9800; }
   .new-profile { display: flex; gap: 8px; margin-top: 12px; }
   .new-profile input {
     flex: 1; border: 2px solid #ddd; border-radius: 12px; padding: 10px 12px;
@@ -469,8 +470,18 @@ function showUserModal() {
     const row = document.createElement("button");
     row.className = "profile-row";
     row.innerHTML = `<span class="pavatar">${avatarFor(name)}</span><span class="pname">${name}</span>` +
-      `<span class="pstars">⭐ ${totalStarsOf(migrateShape(db.users[name]))}</span><span class="pdel" title="Supprimer">✕</span>`;
+      `<span class="pstars">⭐ ${totalStarsOf(migrateShape(db.users[name]))}</span>` +
+      `<span class="preset" title="Remettre le score à zéro">↺</span><span class="pdel" title="Supprimer">✕</span>`;
     row.onclick = () => selectUser(name);
+    row.querySelector(".preset").onclick = e => {
+      e.stopPropagation();
+      if (!confirm(`Remettre à zéro toutes les étoiles de ${name} ?`)) return;
+      db.users[name] = {};
+      if (db.current === name) progress = db.users[name];
+      saveDB();
+      renderHome();
+      showUserModal();
+    };
     row.querySelector(".pdel").onclick = e => {
       e.stopPropagation();
       if (!confirm(`Supprimer le profil de ${name} et toutes ses étoiles ?`)) return;
