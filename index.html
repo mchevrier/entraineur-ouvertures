@@ -36,8 +36,49 @@
   .hero p { opacity: .9; margin-top: 6px; font-size: 1.05rem; }
   .total-stars {
     display: inline-block; background: rgba(255,255,255,.2); border-radius: 20px;
-    padding: 6px 18px; margin-top: 10px; font-weight: 700; font-size: 1.1rem; color: #ffe066;
+    padding: 6px 18px; font-weight: 700; font-size: 1.1rem; color: #ffe066;
   }
+  .hero-bar { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+  .btn-user {
+    border: none; border-radius: 20px; padding: 6px 16px; cursor: pointer; font-family: inherit;
+    background: rgba(255,255,255,.9); color: #4527a0; font-weight: 800; font-size: 1rem;
+  }
+  .btn-user:hover { background: #fff; }
+  .notice {
+    background: rgba(255,255,255,.95); border-radius: 14px; margin: 16px auto 0; max-width: 720px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.15); overflow: hidden;
+  }
+  .notice summary {
+    cursor: pointer; font-weight: 800; padding: 12px 16px; color: #4527a0; font-size: 1rem;
+    list-style: none;
+  }
+  .notice summary::-webkit-details-marker { display: none; }
+  .notice summary::before { content: "▸ "; }
+  .notice[open] summary::before { content: "▾ "; }
+  .notice .notice-body { padding: 0 18px 14px; font-size: .92rem; line-height: 1.55; color: #444; }
+  .notice h4 { margin: 10px 0 4px; color: #2d2d3a; }
+  .notice ul { padding-left: 20px; }
+  .notice li { margin: 3px 0; }
+  /* ---------- PROFILS ---------- */
+  .profile-row {
+    display: flex; align-items: center; gap: 10px; width: 100%; border: 2px solid #eee;
+    background: #fafafa; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px;
+    cursor: pointer; font-family: inherit; font-size: 1rem; text-align: left;
+  }
+  .profile-row:hover { border-color: #b39ddb; background: #f3eefe; }
+  .profile-row .pavatar { font-size: 1.5rem; }
+  .profile-row .pname { font-weight: 800; flex: 1; color: #2d2d3a; }
+  .profile-row .pstars { color: #f5a623; font-weight: 700; font-size: .9rem; }
+  .profile-row .pdel {
+    border: none; background: none; color: #ccc; cursor: pointer; font-size: 1rem; padding: 2px 6px;
+  }
+  .profile-row .pdel:hover { color: #e53935; }
+  .new-profile { display: flex; gap: 8px; margin-top: 12px; }
+  .new-profile input {
+    flex: 1; border: 2px solid #ddd; border-radius: 12px; padding: 10px 12px;
+    font-family: inherit; font-size: 1rem; outline: none; min-width: 0;
+  }
+  .new-profile input:focus { border-color: #7e57c2; }
   .section-title {
     color: #fff; font-size: 1.3rem; margin: 22px 6px 10px; font-weight: 800;
     text-shadow: 0 1px 4px rgba(0,0,0,.3);
@@ -207,8 +248,31 @@
   <div class="hero">
     <h1>🏆 Mon Entraîneur d'Ouvertures</h1>
     <p>Apprends tes ouvertures par cœur avant le tournoi !</p>
-    <div class="total-stars" id="total-stars">⭐ 0 / 30</div>
+    <div class="hero-bar">
+      <div class="total-stars" id="total-stars">⭐ 0</div>
+      <button class="btn-user" id="btn-user">👤</button>
+    </div>
   </div>
+  <details class="notice">
+    <summary>❓ Comment ça marche ? (et comment l'installer sur ton téléphone)</summary>
+    <div class="notice-body">
+      <h4>🎮 Comment jouer</h4>
+      <ul>
+        <li>Choisis une ouverture : tu joues les coups de <b>ta</b> couleur, l'adversaire répond tout seul.</li>
+        <li>📖 <b>Apprendre</b> : le coach explique chaque coup. Bloqué ? Le bouton 💡 entoure la pièce à jouer, puis sa case d'arrivée.</li>
+        <li>🔥 <b>Défi</b> : retrouve les coups de mémoire avec 3 ❤️. Zéro erreur = 3 ⭐ !</li>
+        <li>Beaucoup d'ouvertures ont des <b>variantes</b> (boutons au-dessus de l'échiquier) : il faut les 3 ⭐ sur <b>chacune</b> pour maîtriser l'ouverture. En Défi, 🎲 Surprise laisse l'adversaire choisir, comme en vrai match !</li>
+        <li>Revois les coups joués avec ◀ ▶ ou en touchant la notation.</li>
+        <li>👤 Chacun joue sous son prénom : les étoiles sont sauvegardées sur cet appareil, tu retrouves ta progression à chaque visite.</li>
+      </ul>
+      <h4>📲 Installer l'appli sur ton téléphone</h4>
+      <ul>
+        <li><b>iPhone / iPad</b> : ouvre cette page dans <b>Safari</b> → bouton <b>Partager</b> (le carré avec une flèche) → <b>« Sur l'écran d'accueil »</b>.</li>
+        <li><b>Android</b> : ouvre cette page dans <b>Chrome</b> → menu <b>⋮</b> → <b>« Ajouter à l'écran d'accueil »</b> (ou « Installer l'application »).</li>
+        <li>L'icône ♞ apparaît comme une vraie app… et elle fonctionne même <b>sans internet</b> !</li>
+      </ul>
+    </div>
+  </details>
   <div class="section-title">♔&#xFE0E; Avec les Blancs — prends l'initiative !</div>
   <div class="cards" id="cards-white"></div>
   <div class="section-title">♚&#xFE0E; Avec les Noirs — contre leurs ouvertures !</div>
@@ -252,6 +316,20 @@
 </div>
 
 <!-- ======== FIN ======== -->
+<!-- ======== PROFILS ======== -->
+<div class="overlay" id="user-overlay">
+  <div class="end-box" style="text-align:left">
+    <button class="end-close" id="user-close" style="display:none">✕</button>
+    <h2 style="text-align:center">👋 C'est qui ?</h2>
+    <p style="text-align:center;color:#888;font-size:.9rem;margin:6px 0 14px">Chacun son prénom, chacun ses étoiles !</p>
+    <div id="profile-list"></div>
+    <div class="new-profile">
+      <input id="new-name" type="text" maxlength="14" placeholder="Ton prénom..." autocomplete="off">
+      <button class="btn btn-green" id="btn-new-user">C'est parti !</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="overlay">
   <div class="end-box">
     <button class="end-close" id="end-close" title="Fermer pour voir l'échiquier">✕</button>
@@ -316,20 +394,97 @@ const sndGood = () => { beep(523, .08); beep(659, .1, "sine", .15, .08); };
 const sndBad  = () => beep(180, .18, "sawtooth", .08);
 const sndWin  = () => { [523, 659, 784, 1047].forEach((f, i) => beep(f, .15, "sine", .15, i * .12)); };
 
-/* ---------- progression (par variante : paths[k] = {learned, stars}) ---------- */
-const STORE_KEY = "openings-trainer-v1";
-function loadProgress() {
-  try {
-    const p = JSON.parse(localStorage.getItem(STORE_KEY)) || {};
-    for (const id in p) {
-      const e = p[id];
-      if (e && !e.paths) p[id] = { paths: { 0: { learned: !!e.learned, stars: e.stars || 0 } }, runs: e.runs || 0 };
-    }
-    return p;
-  } catch (e) { return {}; }
+/* ---------- profils & progression (par variante : paths[k] = {learned, stars}) ---------- */
+const OLD_KEY = "openings-trainer-v1";
+const DB_KEY = "ouvertures-users-v1";
+const AVATARS = ["🦁", "🐯", "🦊", "🐼", "🦉", "🐸", "🐺", "🦄", "🐨", "🐲", "🦅", "🐢"];
+const avatarFor = name => AVATARS[[...name].reduce((h, c) => h + c.codePointAt(0), 0) % AVATARS.length];
+
+function migrateShape(p) {
+  // ancien format mono-chemin -> paths[k]
+  for (const id in p) {
+    const e = p[id];
+    if (e && !e.paths) p[id] = { paths: { 0: { learned: !!e.learned, stars: e.stars || 0 } }, runs: e.runs || 0 };
+  }
+  return p;
 }
-function saveProgress(p) { localStorage.setItem(STORE_KEY, JSON.stringify(p)); }
-let progress = loadProgress();
+
+let oldOrphan = null; // ancienne sauvegarde mono-joueur, à rattacher au 1er profil créé
+function loadDB() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(DB_KEY)); } catch (e) {}
+  if (!d || !d.users) d = { current: null, users: {} };
+  try {
+    const old = JSON.parse(localStorage.getItem(OLD_KEY));
+    if (old && Object.keys(d.users).length === 0) oldOrphan = migrateShape(old);
+  } catch (e) {}
+  return d;
+}
+const db = loadDB();
+function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+let progress = {};
+function saveProgress(p) {
+  if (!db.current) return;
+  db.users[db.current] = p;
+  saveDB();
+}
+
+function totalStarsOf(p) {
+  let t = 0;
+  for (const line of LINES)
+    for (let k = 0; k < pathsCount(line); k++)
+      t += ((((p[line.id] || {}).paths) || {})[k] || {}).stars || 0;
+  return t;
+}
+
+function selectUser(name) {
+  if (!db.users[name]) {
+    db.users[name] = oldOrphan || {};
+    oldOrphan = null;
+    localStorage.removeItem(OLD_KEY);
+  }
+  db.current = name;
+  saveDB();
+  progress = migrateShape(db.users[name]);
+  $("user-overlay").classList.remove("show");
+  renderHome();
+}
+
+function showUserModal() {
+  const list = $("profile-list");
+  list.innerHTML = "";
+  Object.keys(db.users).sort((a, b) => a.localeCompare(b)).forEach(name => {
+    const row = document.createElement("button");
+    row.className = "profile-row";
+    row.innerHTML = `<span class="pavatar">${avatarFor(name)}</span><span class="pname">${name}</span>` +
+      `<span class="pstars">⭐ ${totalStarsOf(migrateShape(db.users[name]))}</span><span class="pdel" title="Supprimer">✕</span>`;
+    row.onclick = () => selectUser(name);
+    row.querySelector(".pdel").onclick = e => {
+      e.stopPropagation();
+      if (!confirm(`Supprimer le profil de ${name} et toutes ses étoiles ?`)) return;
+      delete db.users[name];
+      if (db.current === name) db.current = null;
+      saveDB();
+      showUserModal();
+    };
+    list.appendChild(row);
+  });
+  $("user-close").style.display = db.current ? "" : "none";
+  $("new-name").value = "";
+  $("user-overlay").classList.add("show");
+}
+
+function createUser() {
+  const raw = $("new-name").value.trim();
+  if (!raw) return;
+  const name = raw[0].toUpperCase() + raw.slice(1);
+  selectUser(name);
+}
+$("btn-new-user").onclick = createUser;
+$("new-name").addEventListener("keydown", e => { if (e.key === "Enter") createUser(); });
+$("btn-user").onclick = showUserModal;
+$("user-close").onclick = () => $("user-overlay").classList.remove("show");
 const pathProg = (lineId, k) => (((progress[lineId] || {}).paths) || {})[k] || { learned: false, stars: 0 };
 function setPathProg(lineId, k, upd) {
   const p = progress[lineId] || (progress[lineId] = {});
@@ -372,6 +527,7 @@ function renderHome() {
     });
   });
   $("total-stars").textContent = `⭐ ${total} / ${maxTotal}`;
+  $("btn-user").textContent = db.current ? `${avatarFor(db.current)} ${db.current} ▾` : "👤 Joueur";
 }
 
 /* ---------- état du jeu ---------- */
@@ -711,7 +867,15 @@ function closeEndDialog() {
 $("end-close").onclick = closeEndDialog;
 $("overlay").onclick = e => { if (e.target === $("overlay")) closeEndDialog(); };
 
-renderHome();
+/* démarrage : on retrouve le joueur en cours, sinon on demande le prénom */
+if (db.current && db.users[db.current]) {
+  progress = migrateShape(db.users[db.current]);
+  renderHome();
+} else {
+  db.current = null;
+  renderHome();
+  showUserModal();
+}
 
 /* hors ligne (PWA) : seulement quand l'appli est servie par un site, pas en double-clic local */
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
@@ -722,6 +886,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 if (location.hash === "#autotest") {
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   (async () => {
+    selectUser("AutoTest");
     const results = [];
     for (const line of LINES) {
       for (let k = 0; k < pathsCount(line); k++) {
