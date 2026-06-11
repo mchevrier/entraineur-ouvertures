@@ -216,6 +216,12 @@
     position: absolute; inset: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 5; transition: opacity .35s;
   }
+  /* grand écran : l'échiquier se cale sur la hauteur de la fenêtre */
+  @media (min-width: 861px) and (min-height: 560px) {
+    #screen-game { max-width: 1500px; }
+    #board { width: min(calc(100vh - 120px), calc(100vw - 420px), 900px); }
+    #board { width: min(calc(100dvh - 120px), calc(100vw - 420px), 900px); }
+  }
   /* sur téléphone : la bulle du coach et les boutons remontent juste sous l'échiquier */
   @media (max-width: 860px) {
     .panel { display: flex; flex-direction: column; max-width: min(88vw, 520px); }
