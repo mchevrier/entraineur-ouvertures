@@ -108,6 +108,19 @@
   .badge-learned { color: var(--accent); font-weight: 700; }
   .badge-stars { color: #f5a623; letter-spacing: 2px; }
   .badge-todo { color: #bbb; }
+  .champions {
+    background: #fff; border-radius: 16px; padding: 8px 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  }
+  .champ-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid #f0f0f0; font-weight: 700; }
+  .champ-row:last-child { border-bottom: none; }
+  .champ-row.me { background: #f6f1ff; border-radius: 10px; }
+  .champ-rank { width: 2em; text-align: center; font-size: 1.15rem; }
+  .champ-name { flex: 1; }
+  .champ-score { color: #7b5cd6; }
+  .champ-serie { color: #ff7043; font-size: .85rem; }
+  .champ-empty { color: #888; text-align: center; padding: 10px; font-weight: 400; font-size: .9rem; }
+  .end-points { font-weight: 800; color: #7b5cd6; font-size: 1.05rem; margin: 2px 0 6px; }
   .badge-level { font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
   .lvl-debutant { background: #e3f6e8; color: #1d8a45; }
   .lvl-inter { background: #fff3d6; color: #b07b00; }
@@ -315,6 +328,7 @@
     <p>Apprends tes ouvertures par cœur avant le tournoi !</p>
     <div class="hero-bar">
       <div class="total-stars" id="total-stars">⭐ 0</div>
+      <div class="total-stars" id="score-line">💎 0</div>
       <button class="btn-user" id="btn-user">👤</button>
       <button class="btn-user" id="btn-fullscreen" style="display:none">⛶ Plein écran</button>
     </div>
@@ -329,6 +343,8 @@
         <li>🔥 <b>Défi</b> : retrouve les coups de mémoire avec 3 ❤️. Zéro erreur = 3 ⭐ !</li>
         <li>Beaucoup d'ouvertures ont des <b>variantes</b> (boutons au-dessus de l'échiquier) : il faut les 3 ⭐ sur <b>chacune</b> pour maîtriser l'ouverture. En Défi, 🎲 Surprise laisse l'adversaire choisir, comme en vrai match !</li>
         <li>Revois les coups joués avec ◀ ▶ ou en touchant la notation.</li>
+        <li>💎 Chaque Défi réussi rapporte des <b>points</b> : sans faute = 10 points, et chaque sans-faute <b>d'affilée</b> (même en changeant d'ouverture !) fait grimper le bonus : 15, 20, 25, 30... Une erreur et la série repart à zéro !</li>
+        <li>🏆 Ton meilleur score reste à jamais au <b>Tableau des champions</b>, même si tu remets tes étoiles à zéro.</li>
         <li>👤 Chacun joue sous son prénom : les étoiles sont sauvegardées sur cet appareil, tu retrouves ta progression à chaque visite.</li>
       </ul>
       <h4>📲 Installer l'appli sur ton téléphone</h4>
@@ -343,6 +359,8 @@
   <div class="cards" id="cards-white"></div>
   <div class="section-title">♚&#xFE0E; Avec les Noirs — contre leurs ouvertures !</div>
   <div class="cards" id="cards-black"></div>
+  <div class="section-title">🏆 Tableau des champions</div>
+  <div class="champions" id="champions"></div>
   <p style="text-align:center;color:rgba(255,255,255,.7);margin:24px 0 8px;font-size:.85rem">
     Conseil : apprends chaque ligne ET ses variantes en mode 📖, puis gagne 3 ⭐ sur chacune en mode 🔥 Défi !
   </p>
@@ -407,6 +425,7 @@
     <div class="big" id="end-emoji">🎉</div>
     <h2 id="end-title"></h2>
     <div class="stars-line" id="end-stars"></div>
+    <div class="end-points" id="end-points"></div>
     <p id="end-text"></p>
     <div class="action-row">
       <button class="btn btn-ghost" id="end-replay">↺ Rejouer</button>
@@ -472,8 +491,9 @@ const AVATARS = ["🦁", "🐯", "🦊", "🐼", "🦉", "🐸", "🐺", "🦄",
 const avatarFor = name => AVATARS[[...name].reduce((h, c) => h + c.codePointAt(0), 0) % AVATARS.length];
 
 function migrateShape(p) {
-  // ancien format mono-chemin -> paths[k]
+  // ancien format mono-chemin -> paths[k] ; les clés _xxx sont des métadonnées (score...)
   for (const id in p) {
+    if (id.startsWith("_")) continue;
     const e = p[id];
     if (e && !e.paths) p[id] = { paths: { 0: { learned: !!e.learned, stars: e.stars || 0 } }, runs: e.runs || 0 };
   }
@@ -509,6 +529,48 @@ function totalStarsOf(p) {
   return t;
 }
 
+/* ---------- score, série de sans-faute & records ---------- */
+const statsOf = p => ({ score: 0, top: 0, serie: 0, bestSerie: 0, ...(p._stats || {}) });
+// Défi terminé : sans faute = 10 pts + bonus de série (15, 20, 25, 30 max),
+// avec erreurs = quelques points de consolation mais la série retombe à zéro.
+function addDefiResult(stars, won) {
+  const s = statsOf(progress);
+  let pts;
+  if (won && stars === 3) {
+    s.serie += 1;
+    pts = 10 + 5 * Math.min(s.serie - 1, 4);
+  } else {
+    s.serie = 0;
+    pts = won ? (stars === 2 ? 4 : 2) : 0;
+  }
+  s.score += pts;
+  s.top = Math.max(s.top, s.score);
+  s.bestSerie = Math.max(s.bestSerie, s.serie);
+  progress._stats = s;
+  saveProgress(progress);
+  return { pts, serie: s.serie };
+}
+
+function renderChampions() {
+  const box = $("champions");
+  const rows = Object.keys(db.users)
+    .map(name => ({ name, st: statsOf(migrateShape(db.users[name])) }))
+    .sort((a, b) => b.st.top - a.st.top || a.name.localeCompare(b.name));
+  if (!rows.length || rows.every(r => !r.st.top)) {
+    box.innerHTML = `<div class="champ-empty">Termine des Défis sans erreur pour marquer des points et entrer au tableau ! 💎</div>`;
+    return;
+  }
+  const medals = ["🥇", "🥈", "🥉"];
+  box.innerHTML = rows.map((r, i) => `
+    <div class="champ-row${r.name === db.current ? " me" : ""}">
+      <span class="champ-rank">${medals[i] || (i + 1) + "."}</span>
+      <span>${avatarFor(r.name)}</span>
+      <span class="champ-name">${r.name}</span>
+      ${r.st.bestSerie >= 2 ? `<span class="champ-serie">🔥 ${r.st.bestSerie} d'affilée</span>` : ""}
+      <span class="champ-score">💎 ${r.st.top}</span>
+    </div>`).join("");
+}
+
 function selectUser(name) {
   if (!db.users[name]) {
     db.users[name] = oldOrphan || {};
@@ -534,8 +596,9 @@ function showUserModal() {
     row.onclick = () => selectUser(name);
     row.querySelector(".preset").onclick = e => {
       e.stopPropagation();
-      if (!confirm(`Remettre à zéro toutes les étoiles de ${name} ?`)) return;
-      db.users[name] = {};
+      if (!confirm(`Remettre à zéro toutes les étoiles de ${name} ? (son record reste au Tableau des champions)`)) return;
+      const old = statsOf(migrateShape(db.users[name]));
+      db.users[name] = { _stats: { score: 0, serie: 0, top: old.top, bestSerie: old.bestSerie } };
       if (db.current === name) progress = db.users[name];
       saveDB();
       renderHome();
@@ -612,8 +675,12 @@ function renderHome() {
       wrap.appendChild(card);
     });
   });
+  const st = statsOf(progress);
+  $("score-line").textContent = `💎 ${st.score}` + (st.serie >= 2 ? ` · 🔥 ${st.serie}` : "");
+  $("score-line").title = "Tes points — gagne des Défis sans faute pour faire grimper la série !";
   $("total-stars").textContent = `⭐ ${total} / ${maxTotal}`;
   $("btn-user").textContent = db.current ? `${avatarFor(db.current)} ${db.current} ▾` : "👤 Joueur";
+  renderChampions();
 }
 
 /* ---------- état du jeu ---------- */
@@ -935,6 +1002,7 @@ function finishLine() {
   const line = cur.line, k = cur.pathK, n = pathsCount(line);
   $("end-next").style.display = "none";
   $("end-defi").style.display = "none";
+  $("end-points").textContent = "";
   if (cur.mode === "learn") {
     setPathProg(line.id, k, { learned: true });
     const next = Array.from({ length: n }, (_, i) => i).find(i => !pathProg(line.id, i).learned);
@@ -953,10 +1021,14 @@ function finishLine() {
   } else {
     const stars = cur.mistakes === 0 ? 3 : cur.mistakes === 1 ? 2 : 1;
     setPathProg(line.id, k, { stars: Math.max(pathProg(line.id, k).stars, stars) });
+    const res = addDefiResult(stars, true);
     const next = Array.from({ length: n }, (_, i) => i).find(i => pathProg(line.id, i).stars < 3);
     $("end-emoji").textContent = stars === 3 ? "🏆" : "🎉";
     $("end-title").textContent = (n > 1 ? pathLabel(line, k) + " : " : "") + (stars === 3 ? "PARFAIT !" : "terminé !");
     $("end-stars").textContent = starsStr(stars);
+    $("end-points").textContent = stars === 3
+      ? `+${res.pts} 💎` + (res.serie >= 2 ? ` — 🔥 ${res.serie} sans-faute d'affilée !` : "")
+      : `+${res.pts} 💎 (la série de sans-faute repart à zéro)`;
     if (stars < 3) {
       $("end-text").textContent = "Bien joué ! Refais-la sans erreur pour décrocher les 3 étoiles.";
     } else if (next != null) {
@@ -974,9 +1046,12 @@ function finishLine() {
 }
 
 function failLine() {
+  const hadSerie = statsOf(progress).serie;
+  addDefiResult(0, false);
   $("end-emoji").textContent = "💪";
   $("end-title").textContent = "Plus de cœurs !";
   $("end-stars").textContent = "";
+  $("end-points").textContent = hadSerie >= 2 ? `💔 Ta série de ${hadSerie} sans-faute s'arrête... ton score, lui, est gardé !` : "";
   $("end-text").textContent = "Pas grave, ça rentre ! Repasse en mode Apprendre pour revoir la ligne, puis retente le Défi.";
   $("end-defi").style.display = "none";
   $("overlay").classList.add("show");
