@@ -392,6 +392,12 @@ LINES = [
             ("Nxd5", "Égalité parfaite : ton cavalier trône au centre et toutes tes pièces respirent. 💪"),
         ],
         variations=[
+            dict(at=6, name="L'attaque hâtive 4.Cg5 ??", moves=[
+                ("Ng5", None),
+                ("Qxg5", "Il rêve de croquer f7... mais regarde : RIEN ne défend son cavalier, et ta dame le mange tout cru ! (Ça ne marchait que si ton cavalier était en f6.)"),
+                ("Bxf7+", None),
+                ("Kxf7", "Prends aussi le fou ! Ton roi devra remarcher un peu, mais compte : DEUX pièces de plus, et son attaque n'existe plus. Partie gagnée. 😋"),
+            ]),
             dict(at=6, name="Gambit Evans (4.b4)", moves=[
                 ("b4", None),
                 ("Bb6", "Le gambit Evans ! Refuse poliment le cadeau : recule, et son pion b4 deviendra une faiblesse."),
