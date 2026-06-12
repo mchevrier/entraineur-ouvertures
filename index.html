@@ -108,6 +108,29 @@
   .badge-learned { color: var(--accent); font-weight: 700; }
   .badge-stars { color: #f5a623; letter-spacing: 2px; }
   .badge-todo { color: #bbb; }
+  .myst-card {
+    display: flex; gap: 14px; align-items: center; cursor: pointer; color: #fff;
+    background: linear-gradient(120deg, #7b5cd6, #b14fc7 55%, #ff7043);
+    border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.25); transition: transform .15s, box-shadow .15s;
+  }
+  .myst-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.3); }
+  .myst-card .myst-emoji { font-size: 2.6rem; }
+  .myst-card h3 { font-size: 1.1rem; }
+  .myst-card p { font-size: .85rem; opacity: .92; margin-top: 4px; line-height: 1.35; }
+  .myst-level {
+    margin-top: 8px; font-weight: 800; font-size: .8rem;
+    background: rgba(255,255,255,.2); display: inline-block; padding: 2px 10px; border-radius: 10px;
+  }
+  .quiz-btn {
+    display: block; width: 100%; margin: 6px 0; padding: 10px 12px; border-radius: 12px;
+    border: 2px solid #ddd; background: #fafafa; font-family: inherit; font-weight: 700;
+    font-size: .95rem; cursor: pointer; text-align: left;
+  }
+  .quiz-btn:hover:not(:disabled) { border-color: #7b5cd6; background: #f6f1ff; }
+  .quiz-btn.good { border-color: #2e9d3a; background: #e3f6e8; }
+  .quiz-btn.bad { border-color: #e53935; background: #fde3e3; }
+  .quiz-btn:disabled { opacity: .8; cursor: default; }
   .champions {
     background: #fff; border-radius: 16px; padding: 8px 14px;
     box-shadow: 0 4px 14px rgba(0,0,0,.18);
@@ -344,6 +367,7 @@
         <li>Beaucoup d'ouvertures ont des <b>variantes</b> (boutons au-dessus de l'échiquier) : il faut les 3 ⭐ sur <b>chacune</b> pour maîtriser l'ouverture. En Défi, 🎲 Surprise laisse l'adversaire choisir, comme en vrai match !</li>
         <li>Revois les coups joués avec ◀ ▶ ou en touchant la notation.</li>
         <li>💎 Chaque Défi réussi rapporte des <b>points</b> : sans faute = 10 points, et chaque sans-faute <b>d'affilée</b> (même en changeant d'ouverture !) fait grimper le bonus : 15, 20, 25, 30... Une erreur et la série repart à zéro !</li>
+        <li>🎁 <b>Ouverture mystère</b> : je pioche en secret une ouverture que tu as déjà apprise. Joue-la de mémoire, puis devine son nom parmi 4 choix : bonus 💎 à chaque étape ! Plus tu enchaînes de mystères, plus le niveau monte : 🟢 puis 🟡 puis 🔴...</li>
         <li>🏆 Ton meilleur score reste à jamais au <b>Tableau des champions</b>, même si tu remets tes étoiles à zéro.</li>
         <li>👤 Chacun joue sous son prénom : les étoiles sont sauvegardées sur cet appareil, tu retrouves ta progression à chaque visite.</li>
       </ul>
@@ -355,6 +379,14 @@
       </ul>
     </div>
   </details>
+  <div class="myst-card" id="myst-card">
+    <span class="myst-emoji">🎁</span>
+    <div>
+      <h3>Ouverture mystère</h3>
+      <p>Je pioche en secret une ouverture que tu as apprise : joue-la sans te tromper, puis devine son nom. Bonus 💎 à la clé !</p>
+      <div class="myst-level" id="myst-level"></div>
+    </div>
+  </div>
   <div class="section-title">♔&#xFE0E; Avec les Blancs — prends l'initiative !</div>
   <div class="cards" id="cards-white"></div>
   <div class="section-title">♚&#xFE0E; Avec les Noirs — contre leurs ouvertures !</div>
@@ -377,7 +409,7 @@
       <div id="board"></div>
     </div>
     <div class="panel">
-      <div class="mode-row">
+      <div class="mode-row" id="mode-row">
         <button class="mode-btn" id="mode-learn">📖 Apprendre</button>
         <button class="mode-btn" id="mode-defi">🔥 Défi</button>
       </div>
@@ -427,6 +459,7 @@
     <div class="stars-line" id="end-stars"></div>
     <div class="end-points" id="end-points"></div>
     <p id="end-text"></p>
+    <div id="end-quiz"></div>
     <div class="action-row">
       <button class="btn btn-ghost" id="end-replay">↺ Rejouer</button>
       <button class="btn btn-blue" id="end-next" style="display:none"></button>
@@ -676,11 +709,119 @@ function renderHome() {
     });
   });
   const st = statsOf(progress);
+  const tier = LEVEL_INFO[mysteryTier()];
+  $("myst-level").textContent = `Prochain mystère : ${tier[0]} ${tier[1]}` +
+    ((st.myst || 0) ? ` · 🎁 ${st.myst} d'affilée` : "");
   $("score-line").textContent = `💎 ${st.score}` + (st.serie >= 2 ? ` · 🔥 ${st.serie}` : "");
   $("score-line").title = "Tes points — gagne des Défis sans faute pour faire grimper la série !";
   $("total-stars").textContent = `⭐ ${total} / ${maxTotal}`;
   $("btn-user").textContent = db.current ? `${avatarFor(db.current)} ${db.current} ▾` : "👤 Joueur";
   renderChampions();
+}
+
+/* ---------- ouverture mystère ----------
+   On pioche en secret un chemin déjà appris ; l'enfant joue son répertoire
+   sans connaître la ligne, puis devine son nom. Si une position admet
+   plusieurs réponses de SON répertoire (Alapin/Morra, danois refusé/accepté...),
+   on bascule sur la ligne qu'il a choisie : jamais pénalisé pour un bon coup ! */
+const MYST_BONUS = { debutant: 5, inter: 10, avance: 15 };
+
+function mysteryTier() {
+  const m = statsOf(progress).myst || 0;
+  return m >= 4 ? "avance" : m >= 2 ? "inter" : "debutant";
+}
+
+function learnedPaths(level) {
+  const out = [];
+  for (const line of LINES) {
+    if (level && line.level !== level) continue;
+    for (let k = 0; k < pathsCount(line); k++)
+      if (pathProg(line.id, k).learned) out.push({ line, k });
+  }
+  return out;
+}
+
+function startMystery() {
+  const tier = mysteryTier();
+  let pool = learnedPaths(tier);
+  if (!pool.length) pool = learnedPaths(null);
+  if (!pool.length) {
+    alert("Apprends d'abord une ouverture en mode 📖 Apprendre, puis reviens tenter le Mystère !");
+    return;
+  }
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  startLine(pick.line, "defi", pick.k);
+  cur.mystery = true;
+  // toutes les lignes de la même couleur sont candidates : on suivra celle qu'il joue
+  cur.candidates = [];
+  for (const line of LINES) {
+    if (line.side !== pick.line.side) continue;
+    for (let k = 0; k < pathsCount(line); k++)
+      cur.candidates.push({ line, k, moves: buildPath(line, k).moves });
+  }
+  $("game-title").textContent = "🎁 Ouverture mystère";
+  $("path-row").style.display = "none";
+  $("mode-row").style.display = "none";
+  const lvl = LEVEL_INFO[pick.line.level];
+  cur.pendingMsg = `🎁 Ouverture mystère ${lvl[0]} ! Tu joues les ${pick.line.side === "w" ? "Blancs ♔" : "Noirs ♚"}, avec 3 ❤️. Joue TON répertoire de mémoire... et à la fin, devine quelle ouverture c'était !`;
+  setBubble("coach", cur.pendingMsg);
+}
+
+function bumpMyst(won) {
+  const s = statsOf(progress);
+  s.myst = won ? (s.myst || 0) + 1 : 0;
+  progress._stats = s;
+  saveProgress(progress);
+}
+
+function addBonusPts(pts) {
+  const s = statsOf(progress);
+  s.score += pts;
+  s.top = Math.max(s.top, s.score);
+  progress._stats = s;
+  saveProgress(progress);
+}
+
+function filterCandidates() {
+  if (!cur.mystery) return;
+  const i = cur.idx - 1; // dernier coup joué : on ne garde que les lignes qui passent par là
+  cur.candidates = cur.candidates.filter(c => c.moves.length > i && c.moves[i].san === cur.path[i].san);
+}
+
+function mysteryLabel() {
+  return `${cur.line.emoji} ${cur.line.title}` +
+    (cur.pathK ? ` — variante « ${pathLabel(cur.line, cur.pathK)} »` : "");
+}
+
+function renderQuiz() {
+  const box = $("end-quiz");
+  box.innerHTML = "";
+  const opts = LINES.filter(l => l !== cur.line && l.side === cur.line.side)
+    .sort(() => Math.random() - .5)
+    .sort((a, b) => (b.level === cur.line.level ? 1 : 0) - (a.level === cur.line.level ? 1 : 0))
+    .slice(0, 3)
+    .concat([cur.line])
+    .sort(() => Math.random() - .5);
+  opts.forEach(l => {
+    const b = document.createElement("button");
+    b.className = "quiz-btn";
+    b.textContent = `${l.emoji} ${l.title}`;
+    b.onclick = () => {
+      document.querySelectorAll(".quiz-btn").forEach(x => x.disabled = true);
+      if (l === cur.line) {
+        addBonusPts(5);
+        b.classList.add("good");
+        $("end-text").textContent = `OUI, +5 💎 ! C'était ${mysteryLabel()}.`;
+        sndGood();
+      } else {
+        b.classList.add("bad");
+        $("end-text").textContent = `Eh non... c'était ${mysteryLabel()}.`;
+        sndBad();
+      }
+      renderHome();
+    };
+    box.appendChild(b);
+  });
 }
 
 /* ---------- état du jeu ---------- */
@@ -722,6 +863,7 @@ function startLine(line, mode, forcePath) {
   $("screen-home").classList.remove("active");
   $("screen-game").classList.add("active");
   $("overlay").classList.remove("show");
+  $("mode-row").style.display = "";
   $("game-title").textContent = `${line.emoji} ${line.title}`;
   $("mode-learn").className = "mode-btn" + (mode === "learn" ? " active-learn" : "");
   $("mode-defi").className = "mode-btn" + (mode === "defi" ? " active-defi" : "");
@@ -883,12 +1025,15 @@ function advance() {
     const isDiverge = cur.idx === cur.divergeAt;
     applyMove(cur.board, m);
     cur.idx++; cur.viewIdx = cur.idx; cur.busy = false;
+    filterCandidates();
     sndMove();
     const oppName = cur.line.side === "w" ? "Les Noirs jouent" : "Les Blancs jouent";
     const prev = cur.pendingMsg ? cur.pendingMsg + "\n" : "";
     cur.pendingMsg = null;
-    const variant = isDiverge ? `⚡ Surprise, il choisit la variante « ${cur.variantName} » !\n` : "";
-    setBubble("coach", variant + prev + (m.comment ? m.comment + "\n" : "") + `👉 ${oppName} ${sanFR(m.san)}. À toi !`);
+    // en mystère, ni nom de variante ni commentaires : ils révéleraient l'ouverture !
+    const variant = isDiverge && !cur.mystery ? `⚡ Surprise, il choisit la variante « ${cur.variantName} » !\n` : "";
+    const comment = m.comment && !cur.mystery ? m.comment + "\n" : "";
+    setBubble("coach", variant + prev + comment + `👉 ${oppName} ${sanFR(m.san)}. À toi !`);
     renderAll();
     showArrow(m.from_, m.to, "#2b7de9");
     if (!expected()) setTimeout(finishLine, 500);
@@ -914,14 +1059,27 @@ function onSquareClick(sqName) {
 }
 
 function tryMove(from, to) {
-  const m = expected();
+  let m = expected();
   cur.selected = null;
+  if (cur.mystery && !(from === m.from_ && to === m.to)) {
+    // ce coup suit une AUTRE ligne de son répertoire ? Alors il est bon : on la suit !
+    const others = cur.candidates.filter(c =>
+      c.moves.length > cur.idx && c.moves[cur.idx].from_ === from && c.moves[cur.idx].to === to);
+    if (others.length) {
+      const c = others[Math.floor(Math.random() * others.length)];
+      cur.line = c.line; cur.pathK = c.k; cur.path = c.moves;
+      cur.divergeAt = -1; cur.variantName = null;
+      m = expected();
+    }
+  }
   if (from === m.from_ && to === m.to) {
     applyMove(cur.board, m);
     cur.idx++; cur.viewIdx = cur.idx; cur.hintStage = 0; cur.streak++;
+    filterCandidates();
     sndGood();
-    cur.pendingMsg = "✅ " + (m.comment || `${sanFR(m.san)}, c'est le bon coup !`);
-    setBubble("good", m.comment || `${sanFR(m.san)}, c'est le bon coup !`);
+    const praise = (!cur.mystery && m.comment) || `${sanFR(m.san)}, c'est le bon coup !`;
+    cur.pendingMsg = "✅ " + praise;
+    setBubble("good", praise);
     renderAll();
     showArrow(m.from_, m.to, "#2e9d3a");
     if (!expected()) setTimeout(finishLine, 600);
@@ -1003,6 +1161,8 @@ function finishLine() {
   $("end-next").style.display = "none";
   $("end-defi").style.display = "none";
   $("end-points").textContent = "";
+  $("end-quiz").innerHTML = "";
+  $("end-replay").textContent = cur.mystery ? "🎁 Nouveau mystère" : "↺ Rejouer";
   if (cur.mode === "learn") {
     setPathProg(line.id, k, { learned: true });
     const next = Array.from({ length: n }, (_, i) => i).find(i => !pathProg(line.id, i).learned);
@@ -1022,6 +1182,22 @@ function finishLine() {
     const stars = cur.mistakes === 0 ? 3 : cur.mistakes === 1 ? 2 : 1;
     setPathProg(line.id, k, { stars: Math.max(pathProg(line.id, k).stars, stars) });
     const res = addDefiResult(stars, true);
+    if (cur.mystery) {
+      bumpMyst(true);
+      const bonus = MYST_BONUS[line.level] || 5;
+      addBonusPts(bonus);
+      $("end-emoji").textContent = "🎁";
+      $("end-title").textContent = stars === 3 ? "Mystère PARFAIT !" : "Mystère réussi !";
+      $("end-stars").textContent = starsStr(stars);
+      $("end-points").textContent = `+${res.pts} 💎 + ${bonus} 💎 de bonus mystère` +
+        (stars === 3 && res.serie >= 2 ? ` — 🔥 ${res.serie} sans-faute !` : "");
+      $("end-text").textContent = "Question bonus : c'était QUELLE ouverture ? (+5 💎 si tu trouves)";
+      renderQuiz();
+      sndWin();
+      confetti();
+      $("overlay").classList.add("show");
+      return;
+    }
     const next = Array.from({ length: n }, (_, i) => i).find(i => pathProg(line.id, i).stars < 3);
     $("end-emoji").textContent = stars === 3 ? "🏆" : "🎉";
     $("end-title").textContent = (n > 1 ? pathLabel(line, k) + " : " : "") + (stars === 3 ? "PARFAIT !" : "terminé !");
@@ -1048,22 +1224,30 @@ function finishLine() {
 function failLine() {
   const hadSerie = statsOf(progress).serie;
   addDefiResult(0, false);
-  $("end-emoji").textContent = "💪";
-  $("end-title").textContent = "Plus de cœurs !";
+  $("end-quiz").innerHTML = "";
+  $("end-replay").textContent = cur.mystery ? "🎁 Nouveau mystère" : "↺ Rejouer";
+  $("end-emoji").textContent = cur.mystery ? "🕵️" : "💪";
+  $("end-title").textContent = cur.mystery ? "Mystère raté !" : "Plus de cœurs !";
   $("end-stars").textContent = "";
   $("end-points").textContent = hadSerie >= 2 ? `💔 Ta série de ${hadSerie} sans-faute s'arrête... ton score, lui, est gardé !` : "";
-  $("end-text").textContent = "Pas grave, ça rentre ! Repasse en mode Apprendre pour revoir la ligne, puis retente le Défi.";
+  if (cur.mystery) {
+    bumpMyst(false);
+    $("end-text").textContent = `C'était ${mysteryLabel()}. Revois-la en mode 📖... et le prochain mystère repart en 🟢 !`;
+  } else {
+    $("end-text").textContent = "Pas grave, ça rentre ! Repasse en mode Apprendre pour revoir la ligne, puis retente le Défi.";
+  }
   $("end-defi").style.display = "none";
   $("overlay").classList.add("show");
 }
 
 /* ---------- navigation ---------- */
 $("btn-home").onclick = () => { cur = null; $("screen-game").classList.remove("active"); $("screen-home").classList.add("active"); renderHome(); };
-$("btn-restart").onclick = () => startLine(cur.line, cur.mode);
+$("btn-restart").onclick = () => cur.mystery ? startMystery() : startLine(cur.line, cur.mode);
 $("btn-hint").onclick = onHint;
 $("mode-learn").onclick = () => startLine(cur.line, "learn");
 $("mode-defi").onclick = () => startLine(cur.line, "defi");
-$("end-replay").onclick = () => startLine(cur.line, cur.mode);
+$("end-replay").onclick = () => cur.mystery ? startMystery() : startLine(cur.line, cur.mode);
+$("myst-card").onclick = () => startMystery();
 $("end-defi").onclick = () => startLine(cur.line, "defi");
 $("end-menu").onclick = () => { $("overlay").classList.remove("show"); $("btn-home").onclick(); };
 function closeEndDialog() {
