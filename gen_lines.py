@@ -402,7 +402,7 @@ LINES = [
                 ("b4", None),
                 ("Bb6", "Le gambit Evans ! Refuse poliment le cadeau : recule, et son pion b4 deviendra une faiblesse."),
                 ("a4", None),
-                ("a6", "Tu donnes de l'air à ton fou : pas question de le laisser se faire piéger par a5."),
+                ("a6", "Tu donnes de l'air à ton fou : pas question de le laisser se faire piéger par a5. Et surtout ne croque PAS b4 avec le cavalier : après ...Cxb4 ? a5 ! ton fou est coincé (a7 est bouché !), puis c3 chasse ton cavalier. Ce pion est un appât."),
                 ("a5", None),
                 ("Ba7", "À l'abri ! Lui pousse des pions, toi tu vas développer des pièces."),
                 ("b5", None),

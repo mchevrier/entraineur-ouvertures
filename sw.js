@@ -1,7 +1,7 @@
 // Service worker : rend l'appli utilisable hors ligne une fois visitée.
 // Stratégie : on sert le cache tout de suite (rapide, offline), et on rafraîchit
 // en arrière-plan pour récupérer les mises à jour au prochain lancement.
-const CACHE = "ouvertures-v16";
+const CACHE = "ouvertures-v17";
 const ASSETS = [".", "index.html", "manifest.webmanifest", "icon-180.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
