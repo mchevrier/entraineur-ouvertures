@@ -847,9 +847,9 @@ let cur = null;
 /* chemins possibles : 0 = ligne principale, k = variation k-1 (l'adversaire dévie en cours de route) */
 const pathsCount = line => 1 + (line.variations || []).length;
 function buildPath(line, k) {
-  if (k === 0) return { moves: line.moves, divergeAt: -1, variantName: null };
+  if (k === 0) return { moves: line.moves, divergeAt: -1, variantName: null, story: null };
   const v = line.variations[k - 1];
-  return { moves: line.moves.slice(0, v.at).concat(v.moves), divergeAt: v.at, variantName: v.name };
+  return { moves: line.moves.slice(0, v.at).concat(v.moves), divergeAt: v.at, variantName: v.name, story: v.story || null };
 }
 
 function defaultPath(line, mode) {
@@ -874,7 +874,7 @@ function startLine(line, mode, forcePath) {
     hintStage: 0, selected: null, streak: 0, busy: false, pathK: k,
     // en Défi sans choix explicite, on n'affiche pas le chemin tiré : surprise !
     chipSel: forcePath != null ? forcePath : (mode === "defi" ? "rand" : k),
-    path: path.moves, divergeAt: path.divergeAt, variantName: path.variantName,
+    path: path.moves, divergeAt: path.divergeAt, variantName: path.variantName, variantStory: path.story,
   };
   renderPathChips();
   $("screen-home").classList.remove("active");
@@ -1048,7 +1048,8 @@ function advance() {
     const prev = cur.pendingMsg ? cur.pendingMsg + "\n" : "";
     cur.pendingMsg = null;
     // en mystère, ni nom de variante ni commentaires : ils révéleraient l'ouverture !
-    const variant = isDiverge && !cur.mystery ? `⚡ Surprise, il choisit la variante « ${cur.variantName} » !\n` : "";
+    const story = isDiverge && cur.mode === "learn" && cur.variantStory ? `📜 ${cur.variantStory}\n` : "";
+    const variant = isDiverge && !cur.mystery ? `⚡ Surprise, il choisit la variante « ${cur.variantName} » !\n` + story : "";
     const comment = m.comment && !cur.mystery ? m.comment + "\n" : "";
     setBubble("coach", variant + prev + comment + `👉 ${oppName} ${sanFR(m.san)}. À toi !`);
     renderAll();

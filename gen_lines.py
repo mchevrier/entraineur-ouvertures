@@ -51,9 +51,11 @@ LINES = [
                 ("Be7", None),
                 ("c4", "Tu grignotes son centre : un peu plus d'espace pour toi, partie facile à jouer."),
             ]),
-            dict(at=5, name="Le piège Blackburne-Shilling (3...Cd4 ?!)", moves=[
+            dict(at=5, name="Le piège Blackburne-Shilling (3...Cd4 ?!)",
+                story="Ce piège porte le nom de Joseph Blackburne, champion anglais des années 1880 surnommé « la Mort Noire ». La légende raconte qu'il le tendait dans les cafés de Londres pour gagner un shilling (une petite pièce) par partie ! Aujourd'hui encore, des joueurs malins le tentent en blitz et en tournois jeunes contre ceux qui gobent le pion e5. Toi, maintenant, tu sauras.",
+                moves=[
                 ("Nd4", None),
-                ("Nxd4", "STOP, c'est un piège célèbre ! Si tu prenais e5 ?? ...Dg5 ! gagnerait la partie (g2 et f2 tombent en même temps). Prends simplement le cavalier."),
+                ("Nxd4", "STOP, c'est un piège célèbre ! Son cavalier a l'AIR d'abandonner e5... Si tu gobais le pion : Cxe5 ?? Dg5 ! attaquerait ton cavalier ET g2 en même temps — et après Cxf7 Dxg2 Tf1 Dxe4+ Fe2... Cf3 ÉCHEC ET MAT ! Prends simplement son cavalier d4 : c'est LUI qui a gaffé."),
                 ("exd4", None),
                 ("c3", "Tu dissous son pion avancé tout en préparant ton développement."),
                 ("dxc3", None),
@@ -928,7 +930,7 @@ def main():
             vmoves = process_moves(vboard, var["moves"], f"{line['id']}/{var['name']}")
             assert vmoves[0]["color"] != line["side"], f"[{line['id']}/{var['name']}] doit commencer par un coup adverse"
             assert vmoves[-1]["color"] == line["side"], f"[{line['id']}/{var['name']}] dernier coup pas au trait de l'enfant"
-            vars_out.append(dict(at=at, name=var["name"], moves=vmoves))
+            vars_out.append(dict(at=at, name=var["name"], story=var.get("story"), moves=vmoves))
         out.append(dict(
             id=line["id"], side=line["side"], emoji=line["emoji"], level=ORDER_LEVELS[line["id"]],
             title=line["title"], desc=line["desc"], moves=moves_out, variations=vars_out,
