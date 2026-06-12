@@ -685,6 +685,22 @@ LINES = [
             ("c6", "Béton ! d5 est protégé 3 fois. Ton plan : ...dxc4 puis ...b5 ou ...c5 au bon moment."),
         ],
         variations=[
+            dict(at=4, name="L'échange tout de suite (3.cxd5)", moves=[
+                ("cxd5", None),
+                ("exd5", "Il échange dès le 3e coup ? Aucune importance : reprends avec le pion e et ton fou c8 respire. C'est la MÊME variante d'échange, un coup plus tôt.", {
+                    "Qxd5": "Pas avec la dame ! Après ...Dxd5 ? Cc3 ! la chasse en développant — c'est exactement le tour que TOI tu joues contre la Scandinave ! Reprends avec le pion e : ...exd5 libère ton fou c8.",
+                }),
+                ("Nc3", None),
+                ("Nf6", "Développement naturel : te voilà sur des chemins connus."),
+                ("Bg5", None),
+                ("Be7", "Tu pares le clouage, comme toujours."),
+                ("e3", None),
+                ("O-O", "Roi à l'abri d'abord."),
+                ("Bd3", None),
+                ("c6", "Béton sur d5 : ta structure est ultra-solide."),
+                ("Nf3", None),
+                ("Nbd7", "Et te voilà dans la position de l'autre échange : UN seul plan à connaître (tour en e8, cavalier vers e4) pour DEUX ordres de coups ! 🐴"),
+            ]),
             dict(at=6, name="Variante d'échange (4.cxd5)", moves=[
                 ("cxd5", None),
                 ("exd5", "Reprends avec le pion e : ton fou c8 est enfin libre de sortir !"),
