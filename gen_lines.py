@@ -11,6 +11,7 @@ LINES = [
         id="italienne-blancs", side="w", emoji="🏛️",
         title="L'Italienne tranquille",
         desc="Ton plan principal avec les Blancs : développement rapide, roque, puis attaque !",
+        story="L'Italienne est l'une des plus vieilles ouvertures du monde : les maîtres italiens Polerio et Greco l'analysaient déjà vers 1600 ! Son petit nom, « Giuoco Piano », veut dire « jeu tranquille ». Et elle n'a pas pris une ride : Magnus Carlsen la joue encore au plus haut niveau.",
         moves=[
             ("e4", "Tu prends le centre et tu ouvres la voie à ton fou et à ta dame."),
             ("e5", None),
@@ -37,7 +38,9 @@ LINES = [
             ("Nbd2", "Le plan magique : ce cavalier va voyager d2 → f1 → g3 vers le roi noir !"),
         ],
         variations=[
-            dict(at=3, name="La Petroff (2...Cf6)", moves=[
+            dict(at=3, name="La Petroff (2...Cf6)",
+                story="Nommée d'après Alexandre Petrov, le premier grand champion russe (vers 1840). Sa réputation : ultra-solide, presque ennuyeuse — les pros l'utilisent pour neutraliser 1.e4. D'où l'importance du petit piège De2 que tu apprends ici !",
+                moves=[
                 ("Nf6", None),
                 ("Nxe5", "Prends ! Et retiens le piège : s'il copiait avec ...Cxe4 ?, De2 ! gagnerait une pièce (échec à la découverte en c6)."),
                 ("d6", None),
@@ -79,6 +82,7 @@ LINES = [
         id="piege-legal", side="w", emoji="🪤",
         title="Le piège de Légal",
         desc="Un piège célèbre quand les Noirs jouent ...d6 et ...Bg4 : tu « sacrifies » ta dame... pour faire mat !",
+        story="M. de Kermeur, sire de Légal, était le plus fort joueur de France vers 1750 et le professeur du grand Philidor, au célèbre café de la Régence à Paris. Sa partie contre Saint Brie (1750) — celle que tu apprends ! — est l'une des miniatures les plus fameuses de l'histoire des échecs.",
         moves=[
             ("e4", "Le centre, comme toujours."),
             ("e5", None),
@@ -101,6 +105,7 @@ LINES = [
         id="fried-liver", side="w", emoji="🍳",
         title="La Fried Liver (contre 3...Cf6)",
         desc="L'arme fatale contre les Deux Cavaliers : le sacrifice Cxf7 ! qui arrache le roi noir de sa maison. Alternative musclée à ton tranquille 4.d3.",
+        story="Ce sacrifice est étudié depuis plus de 400 ans : l'Italien Polerio le notait déjà vers 1610 ! Son drôle de nom vient de l'italien « fegatello », le foie frit... car le roi noir se fait cuire à petit feu au milieu de l'échiquier. C'est l'une des attaques les plus redoutées des tournois jeunes du monde entier.",
         moves=[
             ("e4", "Comme toujours."),
             ("e5", None),
@@ -131,7 +136,9 @@ LINES = [
             ("d4", "Ouvre le centre : avec un roi en e6, chaque colonne ouverte est un danger mortel. À toi de conclure ! 🔥"),
         ],
         variations=[
-            dict(at=9, name="La bonne défense 5...Ca5", moves=[
+            dict(at=9, name="La bonne défense 5...Ca5",
+                story="...Ca5 ! était déjà recommandé par Polerio en... 1610 ! C'est la seule vraie parade au Foie Frit — et 400 ans plus tard, les théoriciens se disputent ENCORE pour savoir qui est mieux. Toi, tu joues simple : un pion de plus et une bonne position.",
+                moves=[
                 ("Na5", None),
                 ("Bb5+", "Il connaît la parade ! Pas grave : échec intermédiaire, tu gardes l'initiative."),
                 ("c6", None),
@@ -145,6 +152,7 @@ LINES = [
         id="anti-sicilienne", side="w", emoji="🛡️",
         title="Contre la Sicilienne : l'Alapin",
         desc="Si on te joue 1...c5, réponds 2.c3 : tu construis ton grand centre quand même !",
+        story="Elle porte le nom de Semion Alapin, maître russe né en 1856. Longtemps regardée de haut (« trop sage ! »), elle a pris sa revanche : les champions modernes l'utilisent pour éviter la jungle des Siciliennes et imposer LEUR plan. Exactement ton idée !",
         moves=[
             ("e4", "Ton premier coup, toujours le même."),
             ("c5", None),
@@ -189,6 +197,7 @@ LINES = [
         id="morra", side="w", emoji="💣",
         title="Le gambit Smith-Morra (anti-Sicilienne)",
         desc="Ton arme surprise contre 1...c5 : un pion sacrifié contre un développement éclair et des pièges partout !",
+        story="Nommé d'après le Français Pierre Morra, puis popularisé par le Texan Ken Smith. Anecdote : au grand tournoi de San Antonio 1972, Smith l'a tenté contre trois grands maîtres... et a perdu les trois parties ! Mais en parties jeunes et rapides, c'est une machine à pièges terriblement efficace.",
         moves=[
             ("e4", "On commence pareil."),
             ("c5", None),
@@ -239,6 +248,7 @@ LINES = [
         id="anti-francaise", side="w", emoji="🥖",
         title="Contre la Française : l'avance",
         desc="Si on te joue 1...e6, pousse e5 : tu gagnes de l'espace et le fou c8 reste enfermé !",
+        story="La variante d'avance était l'arme favorite d'Aaron Nimzowitsch, le grand penseur des années 1920. Sa théorie : une chaîne de pions e5-d4 bien défendue « étrangle » lentement l'adversaire. Tu joues donc comme un philosophe des échecs !",
         moves=[
             ("e4", "On commence pareil."),
             ("e6", None),
@@ -261,6 +271,7 @@ LINES = [
         id="anti-caro", side="w", emoji="🏰",
         title="Contre la Caro-Kann : l'avance",
         desc="Si on te joue 1...c6, même recette : pousse e5 et joue simple et solide.",
+        story="La Caro-Kann porte les noms de deux amis, Horatio Caro et Marcus Kann, qui l'ont analysée en 1886. Et ta réponse 3.e5 a un parrain de luxe : le magicien Mikhaïl Tal l'a dégainée en match de championnat du monde contre Botvinnik en 1961 !",
         moves=[
             ("e4", "Toujours le même premier coup : c'est ça, un répertoire."),
             ("c6", None),
@@ -281,6 +292,7 @@ LINES = [
         id="anti-scandinave", side="w", emoji="🛶",
         title="Contre la Scandinave",
         desc="1...d5 : très joué chez les jeunes ! Prends, puis harcèle sa dame sortie trop tôt.",
+        story="Record du monde d'ancienneté : la plus vieille partie d'échecs modernes jamais notée (Valence, vers 1475 !) commençait par 1.e4 d5. Et la Scandinave mord encore : le Danois Bent Larsen a battu le champion du monde Karpov avec, en 1979 !",
         moves=[
             ("e4", "Toujours pareil."),
             ("d5", None),
@@ -333,6 +345,7 @@ LINES = [
         id="anti-pirc", side="w", emoji="🐉",
         title="Contre la Pirc (1...d6 et ...g6)",
         desc="Il te laisse tout le centre pour attaquer ton mur plus tard ? Installe-toi solidement, développe tout, et il ne se passera rien pour lui.",
+        story="Nommée d'après Vasja Pirc, maître slovène. Son idée a fait scandale dans les années 1940 : laisser exprès le centre à l'adversaire pour le grignoter ensuite ! Une stratégie « hypermoderne »... qui ne marche que si les Blancs paniquent. Toi, tu ne paniques pas.",
         moves=[
             ("e4", "On commence pareil."),
             ("d6", None),
@@ -356,6 +369,7 @@ LINES = [
         id="anti-berger", side="b", emoji="⚔️",
         title="Stopper le coup du berger",
         desc="2.Dh5 ?! Beaucoup d'enfants le jouent. Apprends à punir la sortie de dame trop tôt !",
+        story="En anglais on l'appelle « Scholar's mate », le mat de l'écolier — il piège des débutants depuis des siècles dans tous les cafés du monde. Chaque futur champion suit le même chemin : le découvrir, le subir UNE fois... puis le punir pour toujours. Tu en es à l'étape 3 !",
         moves=[
             ("e4", None),
             ("e5", "Tu prends ta part du centre."),
@@ -404,6 +418,7 @@ LINES = [
         id="italienne-noirs", side="b", emoji="🎯",
         title="Contrer l'Italienne",
         desc="Face à 3.Fc4 : développe-toi, puis frappe au centre avec ...d5 au bon moment !",
+        story="La riposte ...Fc5 est recommandée depuis le maître italien Greco, vers 1620. Et ton échec intermédiaire ...Fb4+ suivi de ...d5 est la recette d'égalisation que les champions appliquent depuis quatre siècles. Du solide, testé par le temps !",
         moves=[
             ("e4", None),
             ("e5", "Le centre, symétrique et solide."),
@@ -431,7 +446,9 @@ LINES = [
                 ("Bxf7+", None),
                 ("Kxf7", "Prends aussi le fou ! Ton roi devra remarcher un peu, mais compte : DEUX pièces de plus, et son attaque n'existe plus. Partie gagnée. 😋"),
             ]),
-            dict(at=6, name="Gambit Evans (4.b4)", moves=[
+            dict(at=6, name="Gambit Evans (4.b4)",
+                story="Inventé vers 1827 par William Evans, un capitaine de navire gallois — il l'aurait trouvé en pleine mer, pendant son quart ! Anderssen et Morphy ont gagné des merveilles avec, et Kasparov l'a même ressorti en 1995. Ta réponse : refuser poliment, et son pion b4 devient une faiblesse.",
+                moves=[
                 ("b4", None),
                 ("Bb6", "Le gambit Evans ! Refuse poliment le cadeau : recule, et son pion b4 deviendra une faiblesse.", {
                     "Bxb4": "Prendre, c'est accepter SON gambit : après c3 puis d4, ses pièces sortent à toute vitesse — c'est exactement ce qu'il espère. Refuse poliment : recule le fou en b6 !",
@@ -458,6 +475,7 @@ LINES = [
         id="espagnole-noirs", side="b", emoji="🇪🇸",
         title="Contrer l'Espagnole",
         desc="Face à 3.Fb5 : la recette classique ...a6, ...b5, ...d6 — solide depuis 150 ans !",
+        story="L'Espagnole est décrite par le prêtre Ruy López dans un livre de... 1561 ! Et ton 3...a6 porte le nom de Paul Morphy, le génie américain des années 1850 qui écrasait l'Europe entière. C'est l'ouverture la plus analysée de toute l'histoire des échecs.",
         moves=[
             ("e4", None),
             ("e5", "On commence comme d'habitude."),
@@ -481,7 +499,9 @@ LINES = [
             ("c5", "Et tu gagnes de l'espace à l'aile dame. À toi de jouer ! 🚀"),
         ],
         variations=[
-            dict(at=6, name="Variante d'échange (4.Fxc6)", moves=[
+            dict(at=6, name="Variante d'échange (4.Fxc6)",
+                story="L'arme d'Emanuel Lasker, champion du monde pendant 27 ans (record absolu !), puis de Bobby Fischer qui l'a ressuscitée en 1966. L'idée : abîmer tes pions pour viser la finale. Ta parade : la paire de fous, qui vaut de l'or.",
+                moves=[
                 ("Bxc6", None),
                 ("dxc6", "Reprends avec le pion d : tu ouvres la diagonale de ton fou c8 et tu gardes la paire de fous."),
                 ("O-O", None),
@@ -501,6 +521,7 @@ LINES = [
         id="ecossaise-noirs", side="b", emoji="🏴",
         title="Contrer l'Écossaise",
         desc="3.d4 tout de suite : réponds 4...Fc5 et harcèle son cavalier d4 — gare à lui s'il prend en c6 !",
+        story="Son nom vient d'un match par correspondance Édimbourg contre Londres (1824) : les Écossais l'ont jouée... et gagné le match ! Oubliée pendant un siècle, Garry Kasparov l'a ressuscitée en plein championnat du monde 1990. Depuis, elle est partout.",
         moves=[
             ("e4", None),
             ("e5", "Début habituel."),
@@ -536,6 +557,7 @@ LINES = [
         id="gambit-roi-noirs", side="b", emoji="👑",
         title="Contrer le gambit du roi",
         desc="2.f4 : les jeunes attaquants adorent ! Refuse poliment avec 2...Fc5 : son roi ne pourra plus roquer tranquille.",
+        story="LE gambit romantique du 19e siècle : la « Partie Immortelle » d'Anderssen (1851) commence par ces coups ! Bobby Fischer, agacé d'avoir perdu contre, a écrit en 1961 un article fameux pour le « réfuter ». Ton refus 2...Fc5 est la façon la plus maligne d'éviter tous ses pièges.",
         moves=[
             ("e4", None),
             ("e5", "Début habituel."),
@@ -573,6 +595,7 @@ LINES = [
         id="vienne-noirs", side="b", emoji="🎻",
         title="Contrer la Vienne",
         desc="2.Cc3 puis souvent f4 : retiens LE coup magique ...d5 au bon moment !",
+        story="Elle est née dans les cafés enfumés de Vienne, la capitale des échecs vers 1850-1900. Les Viennois rêvaient d'un gambit du roi « amélioré »... jusqu'à ce que la parade ...d5 ! (celle que tu apprends) calme leurs ardeurs pour de bon.",
         moves=[
             ("e4", None),
             ("e5", "Comme toujours."),
@@ -610,6 +633,7 @@ LINES = [
         id="anti-danois", side="b", emoji="🇩🇰",
         title="Contrer le gambit danois : 3...d5 !",
         desc="2.d4 et 3.c3 : il offre des pions pour attaquer vite. Qu'il soit simple (4.Cxc3) ou double (4.Fc4), la parade ...d5 règle tout !",
+        story="Le gambit danois fut l'arme des attaquants romantiques vers 1900, comme Jacques Mieses : deux pions offerts pour deux fous rasants ! Les parades modernes — dont ton ...d5 ! — l'ont presque fait disparaître des grands tournois... mais pas des tournois jeunes, où il fait toujours des ravages.",
         moves=[
             ("e4", None),
             ("e5", "On commence normalement."),
@@ -637,6 +661,7 @@ LINES = [
         id="anti-danois-accepte", side="b", emoji="🍬",
         title="Gambit danois : si tu gobes tout...",
         desc="Tu PEUX accepter les deux pions — mais seulement si tu connais cette suite par cœur : ...d5 puis ...Fb4+ !",
+        story="Ta suite ...d5 puis ...Fb4+ porte le nom de Carl Schlechter, le maître viennois qui a frôlé le titre mondial contre Lasker en 1910. Sa recette marche si bien qu'elle a quasiment tué le gambit danois chez les professionnels !",
         moves=[
             ("e4", None),
             ("e5", "Début classique."),
@@ -668,6 +693,7 @@ LINES = [
         id="gambit-dame-noirs", side="b", emoji="🗿",
         title="Contrer le Gambit Dame",
         desc="Face à 1.d4 et 2.c4 : le Gambit Dame refusé, solide comme un roc.",
+        story="Le Gambit Dame a 500 ans, mais son heure de gloire fut le championnat du monde Capablanca-Alekhine en 1927 : 32 parties sur 34 ont commencé exactement comme ça ! Ton ...e6 est la défense « orthodoxe », le choix des champions du monde depuis un siècle.",
         moves=[
             ("d4", None),
             ("d5", "Tu prends le centre toi aussi : pas peur de 1.d4 !"),
@@ -721,6 +747,7 @@ LINES = [
         id="anti-catalane", side="b", emoji="🐱",
         title="Contrer la Catalane",
         desc="1.d4, 2.c4 puis g3 : son fou veut régner sur la grande diagonale. Construis un mur... puis réponds œil pour œil !",
+        story="La Catalane est née d'une commande : au tournoi de Barcelone 1929, les organisateurs ont demandé à Tartakover d'inventer une ouverture en l'honneur de la Catalogne ! Aujourd'hui c'est l'arme chouchoute des champions positionnels, comme Kramnik.",
         moves=[
             ("d4", None),
             ("d5", "Le centre, comme d'habitude."),
@@ -762,6 +789,7 @@ LINES = [
         id="anti-londres", side="b", emoji="🎡",
         title="Contrer le système de Londres",
         desc="1.d4 et 2.Ff4 : TRÈS joué chez les jeunes. Attaque b2, le talon d'Achille de la Londres !",
+        story="Son nom vient du grand tournoi de Londres 1922, où plusieurs maîtres l'ont adoptée. Longtemps surnommée « l'ouverture des paresseux » (toujours le même schéma quoi qu'il arrive !), elle a explosé de popularité — même Carlsen s'y est mis. Raison de plus pour connaître sa faiblesse : b2 !",
         moves=[
             ("d4", None),
             ("d5", "Tu prends le centre."),
@@ -807,6 +835,7 @@ LINES = [
         id="anglaise-noirs", side="b", emoji="🇬🇧",
         title="Contrer l'Anglaise",
         desc="1.c4 : ne te laisse pas dérouter. Joue ...e5 : c'est une Sicilienne à l'envers, et le centre est pour toi !",
+        story="L'Anglaise porte le nom de Howard Staunton, le champion anglais des années 1840 — celui qui a donné son nom à la forme officielle des pièces ! Bobby Fischer a créé la surprise en la jouant contre Spassky en 1972, au championnat du monde le plus célèbre de l'histoire.",
         moves=[
             ("c4", None),
             ("e5", "Contre l'Anglaise, joue ce que tu connais : le centre ! Tu joues une Sicilienne... à l'envers."),
@@ -933,7 +962,8 @@ def main():
             vars_out.append(dict(at=at, name=var["name"], story=var.get("story"), moves=vmoves))
         out.append(dict(
             id=line["id"], side=line["side"], emoji=line["emoji"], level=ORDER_LEVELS[line["id"]],
-            title=line["title"], desc=line["desc"], moves=moves_out, variations=vars_out,
+            title=line["title"], desc=line["desc"], story=line.get("story"),
+            moves=moves_out, variations=vars_out,
         ))
         print(f"OK  {line['id']:24s} {len(moves_out):2d} demi-coups, {len(vars_out)} variante(s)")
     with open("lines.json", "w") as f:

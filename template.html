@@ -886,7 +886,8 @@ function startLine(line, mode, forcePath) {
   $("mode-defi").className = "mode-btn" + (mode === "defi" ? " active-defi" : "");
   $("btn-hint").style.display = mode === "learn" ? "" : "none";
   cur.pendingMsg = mode === "learn"
-    ? `On apprend « ${line.title} ». Joue les coups ${line.side === "w" ? "des Blancs ♔" : "des Noirs ♚"}, je t'explique tout !`
+    ? `On apprend « ${line.title} ». Joue les coups ${line.side === "w" ? "des Blancs ♔" : "des Noirs ♚"}, je t'explique tout !` +
+      (line.story ? `\n📜 ${line.story}` : "")
     : `Mode Défi ! Tu as 3 ❤️. Retrouve tous les coups de mémoire. Bonne chance !`;
   setBubble("coach", cur.pendingMsg);
   renderAll();
