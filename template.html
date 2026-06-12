@@ -1141,6 +1141,18 @@ function navTo(n) {
   if (!cur) return;
   cur.viewIdx = Math.max(0, Math.min(cur.idx, n));
   cur.selected = null;
+  // en mode Apprendre, on raconte le coup que l'on regarde, comme pendant le jeu
+  if (cur.mode === "learn") {
+    if (cur.viewIdx === 0) {
+      setBubble("coach", "Tout début de la partie ! Avance avec ▶ pour revoir les coups commentés.");
+    } else {
+      const m = cur.path[cur.viewIdx - 1];
+      const who = m.color === cur.line.side ? "Toi" : (cur.line.side === "w" ? "Les Noirs" : "Les Blancs");
+      const back = cur.viewIdx === cur.idx && isKidsTurn() ? "\n👉 Te voilà au présent : à toi de jouer !" : "";
+      setBubble("coach", `${Math.floor((cur.viewIdx - 1) / 2) + 1}. ${who} : ${sanFR(m.san)}` +
+        (m.comment ? `\n${m.comment}` : "") + back);
+    }
+  }
   renderAll();
 }
 $("nav-back").onclick = () => navTo(cur.viewIdx - 1);
