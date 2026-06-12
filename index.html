@@ -111,10 +111,12 @@
   .myst-card {
     display: flex; gap: 14px; align-items: center; cursor: pointer; color: #fff;
     background: linear-gradient(120deg, #7b5cd6, #b14fc7 55%, #ff7043);
-    border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;
+    border-radius: 16px; padding: 14px 16px; margin: 18px 0 14px;
     box-shadow: 0 4px 14px rgba(0,0,0,.25); transition: transform .15s, box-shadow .15s;
   }
   .myst-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.3); }
+  .myst-card.locked { filter: grayscale(.7); opacity: .85; cursor: default; }
+  .myst-card.locked:hover { transform: none; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
   .myst-card .myst-emoji { font-size: 2.6rem; }
   .myst-card h3 { font-size: 1.1rem; }
   .myst-card p { font-size: .85rem; opacity: .92; margin-top: 4px; line-height: 1.35; }
@@ -367,7 +369,7 @@
         <li>Beaucoup d'ouvertures ont des <b>variantes</b> (boutons au-dessus de l'échiquier) : il faut les 3 ⭐ sur <b>chacune</b> pour maîtriser l'ouverture. En Défi, 🎲 Surprise laisse l'adversaire choisir, comme en vrai match !</li>
         <li>Revois les coups joués avec ◀ ▶ ou en touchant la notation.</li>
         <li>💎 Chaque Défi réussi rapporte des <b>points</b> : sans faute = 10 points, et chaque sans-faute <b>d'affilée</b> (même en changeant d'ouverture !) fait grimper le bonus : 15, 20, 25, 30... Une erreur et la série repart à zéro !</li>
-        <li>🎁 <b>Ouverture mystère</b> : je pioche en secret une ouverture que tu as déjà apprise. Joue-la de mémoire, puis devine son nom parmi 4 choix : bonus 💎 à chaque étape ! Plus tu enchaînes de mystères, plus le niveau monte : 🟢 puis 🟡 puis 🔴...</li>
+        <li>🎁 <b>Ouverture mystère</b> (se débloque après 4 ouvertures apprises en entier) : je pioche en secret une ouverture que tu connais. Joue-la de mémoire, puis devine son nom parmi 4 choix : bonus 💎 à chaque étape ! Plus tu enchaînes de mystères, plus le niveau monte : 🟢 puis 🟡 puis 🔴...</li>
         <li>🏆 Ton meilleur score reste à jamais au <b>Tableau des champions</b>, même si tu remets tes étoiles à zéro.</li>
         <li>👤 Chacun joue sous son prénom : les étoiles sont sauvegardées sur cet appareil, tu retrouves ta progression à chaque visite.</li>
       </ul>
@@ -709,9 +711,15 @@ function renderHome() {
     });
   });
   const st = statsOf(progress);
-  const tier = LEVEL_INFO[mysteryTier()];
-  $("myst-level").textContent = `Prochain mystère : ${tier[0]} ${tier[1]}` +
-    ((st.myst || 0) ? ` · 🎁 ${st.myst} d'affilée` : "");
+  const doneModules = completedModulesCount();
+  $("myst-card").classList.toggle("locked", doneModules < MYST_UNLOCK);
+  if (doneModules < MYST_UNLOCK) {
+    $("myst-level").textContent = `🔒 Apprends ${MYST_UNLOCK} ouvertures en entier pour débloquer (${doneModules}/${MYST_UNLOCK})`;
+  } else {
+    const tier = LEVEL_INFO[mysteryTier()];
+    $("myst-level").textContent = `Prochain mystère : ${tier[0]} ${tier[1]}` +
+      ((st.myst || 0) ? ` · 🎁 ${st.myst} d'affilée` : "");
+  }
   $("score-line").textContent = `💎 ${st.score}` + (st.serie >= 2 ? ` · 🔥 ${st.serie}` : "");
   $("score-line").title = "Tes points — gagne des Défis sans faute pour faire grimper la série !";
   $("total-stars").textContent = `⭐ ${total} / ${maxTotal}`;
@@ -731,6 +739,14 @@ function mysteryTier() {
   return m >= 4 ? "avance" : m >= 2 ? "inter" : "debutant";
 }
 
+// modules « complets » = toutes les variantes apprises en mode 📖
+function completedModulesCount() {
+  return LINES.filter(line =>
+    Array.from({ length: pathsCount(line) }, (_, k) => pathProg(line.id, k).learned).every(Boolean)
+  ).length;
+}
+const MYST_UNLOCK = 4;
+
 function learnedPaths(level) {
   const out = [];
   for (const line of LINES) {
@@ -742,13 +758,14 @@ function learnedPaths(level) {
 }
 
 function startMystery() {
+  const done = completedModulesCount();
+  if (done < MYST_UNLOCK) {
+    alert(`Le Mystère se débloque quand tu as appris ${MYST_UNLOCK} ouvertures EN ENTIER (toutes leurs variantes en mode 📖). Tu en as ${done} pour l'instant... courage !`);
+    return;
+  }
   const tier = mysteryTier();
   let pool = learnedPaths(tier);
   if (!pool.length) pool = learnedPaths(null);
-  if (!pool.length) {
-    alert("Apprends d'abord une ouverture en mode 📖 Apprendre, puis reviens tenter le Mystère !");
-    return;
-  }
   const pick = pool[Math.floor(Math.random() * pool.length)];
   startLine(pick.line, "defi", pick.k);
   cur.mystery = true;
