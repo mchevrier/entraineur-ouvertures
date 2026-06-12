@@ -1102,6 +1102,8 @@ function tryMove(from, to) {
     if (!expected()) setTimeout(finishLine, 600);
     else advance();
   } else {
+    // erreur typique répertoriée ? on explique POURQUOI (sauf en mystère : ça révélerait l'ouverture)
+    const trap = !cur.mystery && (m.traps || []).find(t => t.from_ === from && t.to === to) || null;
     cur.streak = 0;
     sndBad();
     $("board").classList.remove("shake");
@@ -1112,13 +1114,15 @@ function tryMove(from, to) {
       if (cur.hearts <= 0) {
         renderAll();
         showArrow(from, to, "#e53935");
-        setTimeout(() => failLine(), 500);
+        setTimeout(() => failLine(trap), 500);
         return;
       }
-      setBubble("bad", `Ce n'est pas le coup de ta ligne... Il te reste ${cur.hearts} ❤️. Réfléchis bien !`);
+      setBubble("bad", (trap ? trap.text + "\n" : "") + `Ce n'est pas le coup de ta ligne... Il te reste ${cur.hearts} ❤️. Réfléchis bien !`);
     } else {
       cur.mistakes++;
-      if (cur.mistakes >= 2 && cur.hintStage < 1) {
+      if (trap) {
+        setBubble("bad", trap.text + "\nEssaie un autre coup !");
+      } else if (cur.mistakes >= 2 && cur.hintStage < 1) {
         cur.hintStage = 1;
         setBubble("bad", "Pas celui-là ! Regarde, je t'entoure en bleu la pièce qu'il faut bouger. 💡");
       } else {
@@ -1238,7 +1242,7 @@ function finishLine() {
   $("overlay").classList.add("show");
 }
 
-function failLine() {
+function failLine(trap) {
   const hadSerie = statsOf(progress).serie;
   addDefiResult(0, false);
   $("end-quiz").innerHTML = "";
@@ -1251,7 +1255,8 @@ function failLine() {
     bumpMyst(false);
     $("end-text").textContent = `C'était ${mysteryLabel()}. Revois-la en mode 📖... et le prochain mystère repart en 🟢 !`;
   } else {
-    $("end-text").textContent = "Pas grave, ça rentre ! Repasse en mode Apprendre pour revoir la ligne, puis retente le Défi.";
+    $("end-text").textContent = (trap ? trap.text + " " : "") +
+      "Pas grave, ça rentre ! Repasse en mode Apprendre pour revoir la ligne, puis retente le Défi.";
   }
   $("end-defi").style.display = "none";
   $("overlay").classList.add("show");

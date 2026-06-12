@@ -400,9 +400,14 @@ LINES = [
             ]),
             dict(at=6, name="Gambit Evans (4.b4)", moves=[
                 ("b4", None),
-                ("Bb6", "Le gambit Evans ! Refuse poliment le cadeau : recule, et son pion b4 deviendra une faiblesse."),
+                ("Bb6", "Le gambit Evans ! Refuse poliment le cadeau : recule, et son pion b4 deviendra une faiblesse.", {
+                    "Bxb4": "Prendre, c'est accepter SON gambit : après c3 puis d4, ses pièces sortent à toute vitesse — c'est exactement ce qu'il espère. Refuse poliment : recule le fou en b6 !",
+                    "Nxb4": "Le pion b4 est un appât ! Après c3 ton cavalier doit fuir, et il construit son grand centre avec d4 en gagnant du temps. Recule plutôt le fou en b6.",
+                }),
                 ("a4", None),
-                ("a6", "Tu donnes de l'air à ton fou : pas question de le laisser se faire piéger par a5. Et surtout ne croque PAS b4 avec le cavalier : après ...Cxb4 ? a5 ! ton fou est coincé (a7 est bouché !), puis c3 chasse ton cavalier. Ce pion est un appât."),
+                ("a6", "Tu donnes de l'air à ton fou : pas question de le laisser se faire piéger par a5. Et toujours pas touche au pion b4 : c'est un appât !", {
+                    "Nxb4": "STOP, b4 est empoisonné ! Après ...Cxb4 ? vient a5 ! et ton fou est coincé : sa case a7 est bouchée par ton propre pion ! Puis c3 chasse ton cavalier et tout s'écroule. Joue d'abord a6 pour ouvrir la sortie a7.",
+                }),
                 ("a5", None),
                 ("Ba7", "À l'abri ! Lui pousse des pions, toi tu vas développer des pièces."),
                 ("b5", None),
@@ -744,13 +749,30 @@ LINES = [
 
 
 def process_moves(board, moves, ctx):
-    """Valide une séquence de coups SAN sur `board` et renvoie les dicts pour le JSON."""
+    """Valide une séquence de coups SAN sur `board` et renvoie les dicts pour le JSON.
+    Une entrée peut avoir un 3e élément {san_erreur: explication} : les pièges
+    typiques tentés À LA PLACE de ce coup, expliqués au moment de l'erreur."""
     out = []
-    for san, comment in moves:
+    for entry in moves:
+        san, comment = entry[0], entry[1]
+        traps_in = entry[2] if len(entry) > 2 else {}
         try:
             move = board.parse_san(san)
         except ValueError as e:
             raise SystemExit(f"[{ctx}] coup illégal {san}: {e}")
+        traps = []
+        for tsan, ttext in traps_in.items():
+            try:
+                tmove = board.parse_san(tsan)
+            except ValueError as e:
+                raise SystemExit(f"[{ctx}] piège illégal {tsan}: {e}")
+            assert tmove != move, f"[{ctx}] le piège {tsan} est identique au bon coup"
+            traps.append(dict(
+                san=tsan,
+                from_=chess.square_name(tmove.from_square),
+                to=chess.square_name(tmove.to_square),
+                text=ttext,
+            ))
         if board.is_en_passant(move):
             raise SystemExit(f"[{ctx}] {san} est une prise en passant (non gérée)")
         castle = None
@@ -759,14 +781,17 @@ def process_moves(board, moves, ctx):
         elif board.is_queenside_castling(move):
             castle = "Q"
         color = "w" if board.turn == chess.WHITE else "b"
-        out.append(dict(
+        d = dict(
             san=san,
             from_=chess.square_name(move.from_square),
             to=chess.square_name(move.to_square),
             castle=castle,
             color=color,
             comment=comment,
-        ))
+        )
+        if traps:
+            d["traps"] = traps
+        out.append(d)
         board.push(move)
         if san.endswith("#"):
             assert board.is_checkmate(), f"[{ctx}] {san} n'est pas mat !"
@@ -819,8 +844,8 @@ def main():
             assert moves_out[at]["color"] != line["side"], f"[{line['id']}/{var['name']}] 'at' ne pointe pas un coup adverse"
             assert var["moves"][0][0] != moves_out[at]["san"], f"[{line['id']}/{var['name']}] même coup que la ligne principale"
             vboard = chess.Board()
-            for san, _ in line["moves"][:at]:
-                vboard.push_san(san)
+            for entry in line["moves"][:at]:
+                vboard.push_san(entry[0])
             vmoves = process_moves(vboard, var["moves"], f"{line['id']}/{var['name']}")
             assert vmoves[0]["color"] != line["side"], f"[{line['id']}/{var['name']}] doit commencer par un coup adverse"
             assert vmoves[-1]["color"] == line["side"], f"[{line['id']}/{var['name']}] dernier coup pas au trait de l'enfant"
