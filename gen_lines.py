@@ -374,6 +374,10 @@ LINES = [
             ("d6", "Tu solidifies e5 et tu ouvres la porte au fou c8."),
             ("d3", None),
             ("O-O", "Roi à l'abri. Compte les pièces développées : toi 3 + roque, eux... une dame qui a perdu son temps ! 🎯"),
+            ("O-O", None),
+            ("Nd4", "Le saut royal ! Tu attaques sa dame pour la TROISIÈME fois — et ton cavalier lorgne aussi c2. Elle n'a jamais eu une seconde de repos."),
+            ("Nxd4", None),
+            ("exd4", "Reprends tranquillement : ton pion d4 chasse maintenant son cavalier c3 — ENCORE un temps gagné ! Son attaque éclair s'est transformée en leçon de développement. 🎓"),
         ],
         variations=[
             dict(at=4, name="Dame en f3 (3.Df3)", moves=[
@@ -387,6 +391,10 @@ LINES = [
                 ("d6", "Tu solidifies e5 et libères ton fou c8."),
                 ("d3", None),
                 ("O-O", "Même punition que dans la ligne principale : tu es développé, sa dame a perdu son temps !"),
+                ("O-O", None),
+                ("Nc6", "Développe ta dernière pièce mineure... en préparant un saut terrible vers d4 !"),
+                ("Bg5", None),
+                ("Nd4", "Et voilà ! Le cavalier attaque sa dame (encore !) et menace aussi ...Cxc2. Punir une dame sortie trop tôt, c'est ça : des gagne-temps jusqu'au bout. 🎯"),
             ]),
         ],
     ),
