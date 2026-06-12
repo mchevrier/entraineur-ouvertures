@@ -763,6 +763,16 @@ LINES = [
             ("e6", "Regarde sa dame à c1 et son fou bloqué... Toi tu as l'espace et l'initiative ! 🔥"),
         ],
         variations=[
+            dict(at=10, name="L'échange 6.Dxb6", moves=[
+                ("Qxb6", None),
+                ("axb6", "Reprends avec le pion a — et dis merci : ta tour a8 obtient une colonne demi-ouverte braquée sur a2, sans bouger ! Et tes pions b doublés ne sont pas faibles... ce sont des béliers."),
+                ("Nf3", None),
+                ("Bf5", "La règle d'or : le fou sort AVANT ...e6, sinon il reste muré derrière ses pions."),
+                ("Nbd2", None),
+                ("b5", "Le rouleau compresseur se met en marche : le pion doublé prépare ...b4 !"),
+                ("Be2", None),
+                ("b4", "La percée ! Tu frappes c3 et tu ouvres les lignes côté dame, là où TA tour et TON espace dominent. Sans les dames, il n'a aucune attaque en face : tu joues tout seul. 🚜"),
+            ]),
             dict(at=4, name="La prise 3.dxc5", moves=[
                 ("dxc5", None),
                 ("e6", "Il a gobé le pion ? Pas de panique : ton FOU va le reprendre. Et s'il essaie de le garder avec b4 ?, joue ...a5 ! et sa chaîne s'écroule."),
