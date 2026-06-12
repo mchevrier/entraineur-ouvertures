@@ -698,6 +698,18 @@ LINES = [
             ("Qc1", None),
             ("e6", "Regarde sa dame à c1 et son fou bloqué... Toi tu as l'espace et l'initiative ! 🔥"),
         ],
+        variations=[
+            dict(at=4, name="La prise 3.dxc5", moves=[
+                ("dxc5", None),
+                ("e6", "Il a gobé le pion ? Pas de panique : ton FOU va le reprendre. Et s'il essaie de le garder avec b4 ?, joue ...a5 ! et sa chaîne s'écroule."),
+                ("e3", None),
+                ("Bxc5", "Tu reprends en DÉVELOPPANT : le fou est superbe ici. Et compte le centre : son pion d4 a disparu, ton pion d5 règne tout seul !"),
+                ("Nf3", None),
+                ("Nc6", "Développement naturel : tu as un temps d'avance et le centre."),
+                ("Bd3", None),
+                ("Nf6", "Trois pièces dehors, le centre pour toi... sa prise dxc5 t'a rendu service ! Roque, puis prépare ...e5 pour tout ouvrir. 😏"),
+            ]),
+        ],
     ),
     dict(
         id="anglaise-noirs", side="b", emoji="🇬🇧",
