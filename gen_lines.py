@@ -310,7 +310,7 @@ LINES = [
             ("e6", None),
             ("Qe2", "Avant-dernière étape : la dame laisse la place au grand roque."),
             ("Bb4", None),
-            ("O-O-O", "Grand roque ! Pourquoi pas le petit ? Parce que ta tour atterrit PILE sur d1, la colonne du combat : elle soutient d4 et prépare la percée d4-d5. Et comme leur roi roquera petit, tu lanceras g4 ! (chasse le fou) puis g5 (chasse le cavalier) : une attaque gratuite, loin de ton roi bien gardé derrière a2-b2-c2. 💥"),
+            ("O-O-O", "Grand roque ! Pourquoi pas le petit ? Parce que ta tour atterrit PILE sur d1, la colonne du combat : elle soutient d4 et prépare la percée d4-d5. Et comme leur roi roquera petit, tu lanceras g4 ! (chasse le fou) puis g5 (chasse le cavalier) : une attaque gratuite, loin de ton roi bien gardé derrière a2-b2-c2. 💥 Et si son fou prend en c2 ? Rxc2 ! il est gobé — l'échec ...Da4+ ne donne rien après b3 : tu restes une pièce devant."),
         ],
         variations=[
             dict(at=3, name="La moderne 2...Cf6", moves=[
