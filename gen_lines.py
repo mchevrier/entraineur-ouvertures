@@ -131,9 +131,7 @@ LINES = [
             ("Nb4", None),
             ("O-O", "Roque ! Son roi à lui erre en plein centre (e6), alors tu mets le tien à l'abri — et ta tour file vers les colonnes centrales. Prochaine étape : ouvrir le jeu avec d4, pile sur son roi."),
             ("c6", None),
-            ("a3", "Tu repousses le cavalier avant l'assaut final."),
-            ("Na6", None),
-            ("d4", "Ouvre le centre : avec un roi en e6, chaque colonne ouverte est un danger mortel. À toi de conclure ! 🔥"),
+            ("d4", "Ouvre le centre tout de suite : avec un roi en e6, chaque colonne ouverte est un danger mortel. À toi de conclure ! 🔥"),
         ],
         variations=[
             dict(at=9, name="La bonne défense 5...Ca5",
