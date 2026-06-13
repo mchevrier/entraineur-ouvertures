@@ -308,9 +308,9 @@ LINES = [
             ("Bf5", None),
             ("Bd2", "Coup pro : tu protèges c3 et tu prépares une menace cachée (Cd5 !) et le grand roque."),
             ("e6", None),
-            ("Qe2", "Avant-dernière étape : la dame laisse la place au grand roque."),
+            ("Qe2", "Avant-dernière étape : la dame libère d1 pour le grand roque. « Mais ça laisse c2 en prise ! » Pas de panique, c'est un pion empoisonné : si ...Fxc2 ?, tu joues d5 ! et le centre explose sur son roi resté coincé au milieu, pendant que sa dame se promène en a5. Tu gagnes bien plus qu'un pion."),
             ("Bb4", None),
-            ("O-O-O", "Grand roque ! Pourquoi pas le petit ? Parce que ta tour atterrit PILE sur d1, la colonne du combat : elle soutient d4 et prépare la percée d4-d5. Et comme leur roi roquera petit, tu lanceras g4 ! (chasse le fou) puis g5 (chasse le cavalier) : une attaque gratuite, loin de ton roi bien gardé derrière a2-b2-c2. 💥 Et si son fou prend en c2 ? Rxc2 ! il est gobé — l'échec ...Da4+ ne donne rien après b3 : tu restes une pièce devant."),
+            ("O-O-O", "Grand roque ! Pourquoi pas le petit ? Parce que ta tour atterrit PILE sur d1, la colonne du combat : elle soutient d4 et prépare la percée d4-d5. Et comme leur roi roquera petit, tu lanceras g4 ! (chasse le fou) puis g5 (chasse le cavalier) : une attaque gratuite, loin de ton roi bien gardé derrière a2-b2-c2. 💥"),
         ],
         variations=[
             dict(at=3, name="La moderne 2...Cf6", moves=[
