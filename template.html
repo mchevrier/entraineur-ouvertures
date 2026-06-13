@@ -1330,6 +1330,8 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) reg.update().catch(() => {});
     });
+    // ...et régulièrement pendant l'utilisation (sinon, app ouverte en continu = jamais)
+    setInterval(() => { if (!document.hidden) reg.update().catch(() => {}); }, 60000);
   }).catch(() => {});
 }
 $("btn-update").onclick = () => location.reload();
