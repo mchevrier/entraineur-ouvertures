@@ -461,6 +461,16 @@ LINES = [
                 ("O-O", None),
                 ("d6", "Solidifie e5 et libère ton fou c8. Bilan de l'Evans : lui a éparpillé ses pions, toi tu as la colonne a et un jeu superbe. 🏆"),
             ]),
+            dict(at=16, name="La poussée 9.e5", moves=[
+                ("e5", None),
+                ("dxc4", "Le coup intermédiaire malin ! Ne bouge SURTOUT pas ton cavalier attaqué : prends d'abord le fou en c4. Tu gagnes une pièce grâce au tempo.", {
+                    "Ne4": "Réflexe naturel... mais tu rates un cadeau ! Avant de sauver ton cavalier, prends le fou : ...dxc4 ! Après exf6 Dxf6, tu as une pièce de plus.",
+                    "Nd7": "Reculer le cavalier laisse filer l'avantage. Prends d'abord le fou : ...dxc4 ! gagne une pièce contre un pion.",
+                    "Ng4": "Pas la peine de fuir : ...dxc4 ! d'abord, et après exf6 Dxf6 tu es une pièce devant.",
+                }),
+                ("exf6", None),
+                ("Qxf6", "Tu reprends : bilan, une PIÈCE pour un pion ! Tu peux ensuite proposer l'échange des dames (après De2+, joue ...De7) et convertir tranquillement. 🎯"),
+            ]),
         ],
     ),
     dict(
