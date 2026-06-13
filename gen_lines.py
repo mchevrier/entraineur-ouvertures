@@ -129,7 +129,7 @@ LINES = [
             ("Ke6", None),
             ("Nc3", "Encore une pièce sur d5 : tout ton monde converge vers le roi baladeur."),
             ("Nb4", None),
-            ("O-O", "Roque ! Son roi à lui erre en plein centre (e6), alors tu mets le tien à l'abri — et ta tour file vers les colonnes centrales. Prochaine étape : ouvrir le jeu avec d4, pile sur son roi."),
+            ("O-O", "Roque ! Son roi à lui erre en plein centre (e6), alors tu mets le tien à l'abri — et ta tour file vers les colonnes centrales. Et si son cavalier gobe c2 (...Cxc2) ? Laisse-le ! Fxd5+ ! et son roi est traqué : dans la Fried Liver, le roi compte, pas les pions. Prochaine étape : ouvrir le jeu avec d4, pile sur son roi."),
             ("c6", None),
             ("d4", "Ouvre le centre tout de suite : avec un roi en e6, chaque colonne ouverte est un danger mortel. À toi de conclure ! 🔥"),
         ],
