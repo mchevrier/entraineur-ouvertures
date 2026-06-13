@@ -7,6 +7,15 @@ import base64
 import json
 import os
 import re
+import subprocess
+import sys
+
+# Annonce/rafraîchit les évals Stockfish dans lines.json (instantané via cache,
+# best-effort : si ça échoue on continue avec les évals déjà présentes).
+try:
+    subprocess.run([sys.executable, "eval_lines.py"], check=True)
+except Exception as e:
+    print(f"⚠  eval_lines.py non exécuté ({e}) — build poursuivi.")
 
 lines = open("lines.json").read()
 

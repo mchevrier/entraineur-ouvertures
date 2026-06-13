@@ -129,7 +129,7 @@ LINES = [
             ("Ke6", None),
             ("Nc3", "Encore une pièce sur d5 : tout ton monde converge vers le roi baladeur."),
             ("Nb4", None),
-            ("Qe4", "La dame se recentre : pression maximale sur d5 et e5."),
+            ("O-O", "Roque ! Son roi à lui erre en plein centre (e6), alors tu mets le tien à l'abri — et ta tour file vers les colonnes centrales. Prochaine étape : ouvrir le jeu avec d4, pile sur son roi."),
             ("c6", None),
             ("a3", "Tu repousses le cavalier avant l'assaut final."),
             ("Na6", None),
@@ -798,9 +798,7 @@ LINES = [
                 "Qxb3": "N'échange pas ! Après axb3, SA tour a1 s'ouvre une autoroute sur la colonne a. Pousse ...c4 ! et sa dame doit encore reculer, toute seule.",
             }),
             ("Qc2", None),
-            ("Bf5", "Encore la dame ! Elle n'a plus que la case c1, toute triste."),
-            ("Qc1", None),
-            ("e6", "Regarde sa dame à c1 et son fou bloqué... Toi tu as l'espace et l'initiative ! 🔥"),
+            ("Nf6", "Développement tranquille. Ton pari est déjà gagné : sa dame a été promenée de b3 à c2, loin du jeu, pendant que tu tiens le centre et l'espace. Pas de coup risqué — tu finis ton développement, la position est saine. 🎡"),
         ],
         variations=[
             dict(at=10, name="L'échange 6.Dxb6", moves=[

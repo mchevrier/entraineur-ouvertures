@@ -153,7 +153,21 @@
 
   /* ---------- JEU ---------- */
   .game-wrap { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
-  .board-col { flex: 0 0 auto; }
+  .board-col { flex: 0 0 auto; display: flex; gap: 8px; align-items: stretch; }
+  /* barre d'éval (mode Apprendre) : le camp entraîné est en bas, comme ses pièces */
+  .eval-col { display: flex; flex-direction: column; align-items: center; width: 22px; }
+  .eval-bar {
+    flex: 1; width: 14px; border-radius: 7px; overflow: hidden; position: relative;
+    background: #3a3a44; box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+  }
+  .eval-fill {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 50%;
+    background: #f4f4ee; transition: height .35s;
+  }
+  /* quand le camp entraîné est Noir, on inverse les couleurs (bas = foncé) */
+  .eval-col.flip .eval-bar { background: #f4f4ee; }
+  .eval-col.flip .eval-fill { background: #3a3a44; }
+  .eval-num { font-size: .72rem; font-weight: 800; color: #fff; margin-top: 4px; min-height: 1em; text-shadow: 0 1px 2px rgba(0,0,0,.45); }
   .panel {
     flex: 1 1 280px; min-width: 270px; max-width: 420px;
     background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 4px 14px rgba(0,0,0,.18);
@@ -414,6 +428,10 @@
   </div>
   <div class="game-wrap">
     <div class="board-col">
+      <div class="eval-col" id="eval-col">
+        <div class="eval-bar"><div class="eval-fill" id="eval-fill"></div></div>
+        <div class="eval-num" id="eval-num">0.0</div>
+      </div>
       <div id="board"></div>
     </div>
     <div class="panel">
@@ -931,7 +949,30 @@ function setBubble(kind, text) {
   $("bubble-text").textContent = text;
 }
 
-function renderAll() { renderBoard(); renderHud(); renderMoves(); }
+function renderAll() { renderBoard(); renderHud(); renderMoves(); updateEval(); }
+
+/* barre d'éval (mode Apprendre uniquement) : éval stockée point de vue Blancs,
+   affichée du point de vue du camp entraîné (avantage = barre qui monte vers lui) */
+function updateEval() {
+  const col = $("eval-col");
+  const hasData = cur.path.some(m => m.ev !== undefined);
+  if (!hasData || cur.mode !== "learn") { col.style.display = "none"; return; }
+  col.style.display = "";
+  col.classList.toggle("flip", cur.line.side === "b");
+  const wcp = cur.viewIdx > 0 ? (cur.path[cur.viewIdx - 1].ev ?? 0) : 0;
+  const cp = wcp * (cur.line.side === "w" ? 1 : -1);   // point de vue du camp entraîné
+  let pct, label;
+  if (Math.abs(cp) >= 10000) {                          // mat
+    pct = cp > 0 ? 99 : 1;
+    label = cp > 0 ? "#" : "−#";
+  } else {
+    const pawns = cp / 100;
+    pct = 50 + 48 * Math.tanh(pawns / 3);
+    label = (cp > 0 ? "+" : cp < 0 ? "−" : "") + Math.abs(pawns).toFixed(1);
+  }
+  $("eval-fill").style.height = pct.toFixed(1) + "%";
+  $("eval-num").textContent = label;
+}
 
 function renderHud() {
   const kidMoves = cur.path.filter(m => m.color === cur.line.side).length;
