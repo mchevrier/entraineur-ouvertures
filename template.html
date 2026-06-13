@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>🏆 Mon Entraîneur d'Ouvertures</title>
 <meta name="theme-color" content="#667eea">
 <meta name="color-scheme" content="only light">
@@ -282,22 +282,28 @@
   /* téléphone en paysage : échiquier maximal à gauche (toute la hauteur),
      Menu + titre + boutons dans la colonne de droite */
   @media (orientation: landscape) and (max-height: 520px) {
-    .screen { padding: 8px 12px; position: relative; }
+    .screen {
+      position: relative;
+      padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+               max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
     .game-wrap { flex-wrap: nowrap; gap: 14px; justify-content: flex-start; }
     #board { width: min(calc(100vh - 16px), 520px); }
-    #board { width: min(calc(100dvh - 16px), 520px); }
+    #board { width: min(calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)), 520px); }
     /* le bandeau Menu + titre vient coiffer la colonne de droite */
     .topbar {
-      position: absolute; top: 8px; right: 12px; margin: 0; flex-wrap: nowrap; gap: 8px;
-      left: calc(min(100vh - 16px, 520px) + 26px);
-      left: calc(min(100dvh - 16px, 520px) + 26px);
+      position: absolute; top: max(8px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
+      margin: 0; flex-wrap: nowrap; gap: 8px;
+      left: calc(min(100vh - 16px, 520px) + 26px + env(safe-area-inset-left));
+      left: calc(min(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom), 520px) + 26px + env(safe-area-inset-left));
     }
     .btn-back { padding: 6px 12px; flex: 0 0 auto; }
     .game-title { font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .panel {
       display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; max-width: none;
       margin-top: 44px;
-      max-height: calc(100vh - 60px); max-height: calc(100dvh - 60px);
+      max-height: calc(100vh - 60px);
+      max-height: calc(100dvh - 60px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       overflow-y: auto; padding: 12px;
     }
     .panel > * { flex-shrink: 0; }
@@ -1215,7 +1221,12 @@ function finishLine() {
     }
   } else {
     const stars = cur.mistakes === 0 ? 3 : cur.mistakes === 1 ? 2 : 1;
-    setPathProg(line.id, k, { stars: Math.max(pathProg(line.id, k).stars, stars) });
+    // un Défi PARFAIT (3 ⭐, zéro faute) prouve que la ligne est maîtrisée :
+    // on la marque aussi « apprise » (utile quand on attaque direct en Défi après un reset)
+    setPathProg(line.id, k, {
+      stars: Math.max(pathProg(line.id, k).stars, stars),
+      ...(stars === 3 ? { learned: true } : {}),
+    });
     const res = addDefiResult(stars, true);
     if (cur.mystery) {
       bumpMyst(true);
