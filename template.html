@@ -1340,7 +1340,15 @@ $("end-defi").onclick = () => startLine(cur.line, "defi");
 $("end-menu").onclick = () => { $("overlay").classList.remove("show"); $("btn-home").onclick(); };
 function closeEndDialog() {
   $("overlay").classList.remove("show");
-  if (cur) setBubble("coach", "Voilà la position finale ! Revois les coups avec ◀ ▶, ou ↺ Recommencer pour rejouer la ligne.");
+  if (!cur) return;
+  // En mode Apprendre, la popup de victoire a masqué la conclusion (commentaire du
+  // dernier coup) : on la RÉ-AFFICHE pour ne pas la perdre, l'échiquier étant revisible.
+  const last = cur.mode === "learn" && cur.path && cur.idx > 0 ? cur.path[cur.idx - 1] : null;
+  if (last && last.comment) {
+    setBubble("good", last.comment + "\n\n👉 Revois les coups avec ◀ ▶, ou ↺ Recommencer pour rejouer la ligne.");
+  } else {
+    setBubble("coach", "Voilà la position finale ! Revois les coups avec ◀ ▶, ou ↺ Recommencer pour rejouer la ligne.");
+  }
 }
 $("end-close").onclick = closeEndDialog;
 $("overlay").onclick = e => { if (e.target === $("overlay")) closeEndDialog(); };
