@@ -451,7 +451,7 @@ LINES = [
             ("Ne2", None),
             ("Bg7", "Le fou est superbe sur la grande diagonale."),
             ("Nbc3", None),
-            ("d6", "Tu solidifies e5 et tu ouvres la porte au fou c8."),
+            ("d6", "Tu solidifies e5 (un 2e défenseur en plus du cavalier c6) et tu ouvres la porte à ton fou c8. Tu pourrais aussi roquer tout de suite, c'est tout aussi bon — ça revient exactement au même (tu joueras ...d6 juste après). Mais comme aucune menace ne pèse encore sur ton roi, autant faire d'abord le coup qui travaille, et roquer ensuite."),
             ("d3", None),
             ("O-O", "Roi à l'abri. Compte les pièces développées : toi 3 + roque, eux... une dame qui a perdu son temps ! 🎯"),
             ("O-O", None),
