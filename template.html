@@ -713,6 +713,8 @@ function renderHome() {
       maxTotal += 3 * n;
       const nKid = line.moves.filter(m => m.color === line.side).length;
       const nVar = n - 1;
+      const coupsBreakdown = Array.from({ length: n }, (_, k) =>
+        `${k === 0 ? "Principale" : line.variations[k - 1].name} : ${kidMovesIn(line, k)} coups`).join("\n");
       const card = document.createElement("div");
       const done = learnedCount === n && minStars === 3;
       card.className = "card" + (done ? " done" : "");
@@ -728,7 +730,7 @@ function renderHome() {
           <span class="badge-level lvl-${line.level}">${lvl[0]} ${lvl[1]}</span>
           <span class="${learnedCount === n ? "badge-learned" : "badge-todo"}">${learnedLabel}</span>
           <span class="badge-stars" title="3 étoiles quand TOUTES les variantes sont à 3 !">${starsStr(minStars)}</span>
-          <span style="color:#aaa;font-size:.8rem">${nKid} coups${nVar ? ` · ${nVar} variante${nVar > 1 ? "s" : ""}` : ""}</span>
+          <span style="color:#aaa;font-size:.8rem" title="${coupsBreakdown}">${nKid} coups${nVar ? ` · ${nVar} variante${nVar > 1 ? "s" : ""}` : ""}</span>
         </div>`;
       card.onclick = () => startLine(line, learnedCount === n ? "defi" : "learn");
       wrap.appendChild(card);
@@ -870,6 +872,8 @@ let cur = null;
 
 /* chemins possibles : 0 = ligne principale, k = variation k-1 (l'adversaire dévie en cours de route) */
 const pathsCount = line => 1 + (line.variations || []).length;
+/* nb de coups que L'ENFANT doit mémoriser dans un chemin (= indicateur de difficulté) */
+const kidMovesIn = (line, k) => buildPath(line, k).moves.filter(m => m.color === line.side).length;
 function buildPath(line, k) {
   if (k === 0) return { moves: line.moves, divergeAt: -1, variantName: null, story: null };
   const v = line.variations[k - 1];
@@ -928,8 +932,10 @@ function renderPathChips() {
     const chip = document.createElement("button");
     chip.className = "chip" + (cur.chipSel === k ? " active" : "");
     const q = pathProg(cur.line.id, k);
+    const nc = kidMovesIn(cur.line, k);
+    chip.title = `${nc} coups à mémoriser dans cette variante`;
     chip.innerHTML = `${k === 0 ? "Principale" : cur.line.variations[k - 1].name}` +
-      `<span class="mini-stars">${q.learned ? starsStr(q.stars) : "à apprendre"}</span>`;
+      `<span class="mini-stars">${q.learned ? starsStr(q.stars) : "à apprendre"} · ${nc} coups</span>`;
     chip.onclick = () => startLine(cur.line, cur.mode, k);
     row.appendChild(chip);
   }
